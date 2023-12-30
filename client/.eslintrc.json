@@ -1,0 +1,54 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "airbnb",
+    "plugin:react/jsx-runtime",
+    "plugin:prettier/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:import/recommended",
+    "prettier"
+  ],
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "babelOptions": {
+      "presets": ["@babel/preset-react"]
+   },
+    "requireConfigFile": false,
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 11,
+    "sourceType": "module"
+  },
+  "settings": {
+    "react": {
+        "version": "detect"
+    }
+},
+  "plugins": ["react", "prettier"],
+  "rules": {
+    "react/prop-types": 0,
+    "react/destructuring-assignment": 0,
+    "react/self-closing-comp": "off",
+    "import/no-named-as-default": 0,
+    "prettier/prettier": "error",
+    "import/prefer-default-export": 0,
+    "react-in-jsx-scope": 0,
+    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
+    "react/function-component-definition": [
+      2,
+      {
+        "namedComponents": [
+          "function-declaration",
+          "arrow-function" /* , "function-expression" , "arrow-function" */
+        ],
+        "unnamedComponents": ["function-expression" /* "arrow-function" */]
+      }
+    ]
+  }
+}
