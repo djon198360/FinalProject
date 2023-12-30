@@ -21,11 +21,10 @@ export const MainH2 = styled.h2`
   margin-bottom: 30px;
 `;
 
-export MainContent =  styled.div`
+export const MainContent = styled.div`
   width: 100%;
   margin: 0 auto;
-  `;
-
+`;
 export const MainContentMob = styled.div`
   width: 100%;
   margin: 0 auto;
@@ -35,4 +34,4 @@ export const MainContentMob = styled.div`
   left: 0;
   top: 134px;
   bottom: 84px;
-  `;
+`;

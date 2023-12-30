@@ -1,8 +1,16 @@
 import { StrictMode } from "react";
-import { Main } from "./Pages/Main/Main";
+import AppRoutes from "./Route/Routes";
+import { RenderHeader } from "./Components/Header/Header";
+import * as S from "./Style";
+/* import { Main } from "./Pages/Main/Main"; */
 
 export const App = () => (
   <StrictMode>
-    <Main />
+    <S.Wrapper>
+      <S.Container>
+        <RenderHeader />
+        <AppRoutes />
+      </S.Container>
+    </S.Wrapper>
   </StrictMode>
 );

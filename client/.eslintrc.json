@@ -17,7 +17,7 @@
   "parserOptions": {
     "babelOptions": {
       "presets": ["@babel/preset-react"]
-   },
+    },
     "requireConfigFile": false,
     "ecmaFeatures": {
       "jsx": true
@@ -27,9 +27,9 @@
   },
   "settings": {
     "react": {
-        "version": "detect"
+      "version": "detect"
     }
-},
+  },
   "plugins": ["react", "prettier"],
   "rules": {
     "react/prop-types": 0,
