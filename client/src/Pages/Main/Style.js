@@ -35,3 +35,18 @@ export const MainContentMob = styled.div`
   top: 134px;
   bottom: 84px;
 `;
+
+export const CardsBlock = styled.div`
+  max-width: 1158px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 270px);
+  grid-auto-rows: 441px;
+  grid-gap: 40px 26px;
+  justify-content: center;
+  overflow-y: auto;
+  scrollbar-color: #ffffff #2e2e2e;
+  scrollbar-width: thin;
+  scrollbar-width: 0px;
+  height: 922px;
+`;

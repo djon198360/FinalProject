@@ -1,7 +1,7 @@
 import { isMobile } from "react-device-detect";
 import * as S from "./Style";
 
-export const RenderSearchForm = () => {
+export const RenderSearchForm = (setSearchValue) => {
   return (
     <S.Search>
       {!isMobile ? (
@@ -19,6 +19,8 @@ export const RenderSearchForm = () => {
             type="search"
             placeholder="Поиск по объявлениям"
             name="search"
+            value={setSearchValue.setSearchValue}
+            onChange={setSearchValue.onChange}
           />
           <S.SearchButton type="button" value="dfdsfdsf">
             Найти
@@ -26,7 +28,13 @@ export const RenderSearchForm = () => {
         </S.SearchForm>
       ) : (
         <S.SearchFormMob>
-          <S.InputMob type="search" placeholder="Поиск" name="search" />
+          <S.InputMob
+            type="search"
+            placeholder="Поиск"
+            name="search"
+            value={setSearchValue.setSearchValue}
+            onChange={setSearchValue.onChange}
+          />
         </S.SearchFormMob>
       )}
       {/*             <form class="search__form" action="#">
