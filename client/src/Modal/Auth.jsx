@@ -1,16 +1,73 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { validInput } from "../assets/helpFunc";
+import { lang } from "../assets/Language";
+/* import { isAuth } from "../Consts/Consts"; */
+import {
+  useUserRegisterMutation,
+  useUserLoginMutation,
+  useUserGetQuery,
+} from "../Services/ApiPost";
 import * as S from "./Style";
 
 export const ModalAuth = ({ isVisible = false, onClose }) => {
-  const { emails, passwords, passwordsRepeat } = useRef(null);
+  const [registerApi, isLoadings] = useUserRegisterMutation();
+  const [loginUserApi, { data, isLoading }] = useUserLoginMutation();
   const [isLogin, setLogin] = useState(true);
   const [isRegister, setRegister] = useState(false);
   const [loginValue, setLoginValue] = useState({
     email: "",
     password: "",
     passwordRepeat: "",
+    role: "user",
   });
+
+  const userId = data?.access_token;
+
+  // Затем получаем проекты пользователя
+  const { data: projects } = useUserGetQuery(["projects", userId], {
+    // Запрос не будет выполняться до получения userId
+    enabled: !!userId,
+  });
+  console.log(projects);
+  const [errorMessage, setErrorMessage] = useState(null);
+  // const [userGetApi, { isLoadin }] = useUserGetQuery();
+  const handleLogin = async () => {
+    const result = await loginUserApi({
+      email: loginValue.email.text,
+      password: loginValue.password.text,
+    });
+    if (result.data) {
+      onClose();
+    }
+
+    if (result?.error) {
+      setErrorMessage(result.error.data);
+      if (result?.error.status === 401) {
+        console.log("Неверный логин , или пароль");
+      }
+      if (result?.error.status === 422) {
+        console.log("Неверный логин , или пароль");
+      }
+    }
+  };
+
+  const handleRegister = async () => {
+    const result = await registerApi({
+      email: loginValue.email.text,
+      password: loginValue.password.text,
+      name: loginValue.name.text,
+      surname: loginValue.surname.text,
+      city: loginValue.city.text,
+      role: loginValue.role,
+    });
+    if (result?.error) {
+      if (result?.error.status === 401) {
+        setErrorMessage(result.error.detail);
+        console.log("Неверный логин , или пароль");
+      }
+    }
+    //  results.error ? alert("error") : alert("succes");
+  };
   const [isBlock, setisBlock] = useState(true);
   const keydownHandler = ({ key }) => {
     switch (key) {
@@ -55,10 +112,7 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
   });
 
   useEffect(() => {
-    console.log(loginValue);
-    console.log(`isLogin ${isLogin}`);
-    console.log(`is Register ${isRegister}`);
-    console.log(`is Block ${isBlock}`);
+    setErrorMessage();
     if (
       isRegister &&
       loginValue.email.validate &&
@@ -92,12 +146,15 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
                 <S.LogoImg src="../img/logo_modal.png" alt="logo" />
               </S.A>
             </S.Logo>
+            <S.ErrorSpan>
+              {lang[errorMessage] ? lang[errorMessage] : errorMessage}
+            </S.ErrorSpan>
             <S.Input
               color={loginValue.email?.color}
               type="text"
               placeholder="email *"
+              autocomplete="username"
               name="email"
-              ref={emails}
               value={loginValue.email.text}
               onChange={(e) => {
                 updateInputValue(e);
@@ -110,14 +167,20 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
               color={loginValue.password?.color}
               type="password"
               placeholder="Пароль *"
+              autocomplete="current-password"
               name="password"
-              ref={passwords}
               value={loginValue.password?.text}
               onChange={(e) => {
                 updateInputValue(e);
               }}
               onBlur={(e) => {
-                validateInputs(e);
+                updateInputValue(e);
+              }}
+              onInput={(e) => {
+                updateInputValue(e);
+              }}
+              onClick={(e) => {
+                updateInputValue(e);
               }}
             />
             {isRegister || !isLogin ? (
@@ -127,12 +190,17 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
                   type="password"
                   placeholder="Повторите пароль *"
                   name="passwordRepeat"
-                  ref={passwordsRepeat}
                   value={loginValue.passwordRepeat?.text}
                   onChange={(e) => {
                     updateInputValue(e);
                   }}
                   onBlur={(e) => {
+                    updateInputValue(e);
+                  }}
+                  onInput={(e) => {
+                    updateInputValue(e);
+                  }}
+                  onClick={(e) => {
                     updateInputValue(e);
                   }}
                 />
@@ -148,8 +216,8 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
                 <S.Input
                   type="text"
                   placeholder="Фамилия (Необязятально)"
-                  name="family"
-                  value={loginValue.family?.text}
+                  name="surname"
+                  value={loginValue.surname?.text}
                   onChange={(e) => {
                     updateInputValue(e);
                   }}
@@ -171,8 +239,13 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
 
             {isLogin ? (
               <>
-                <S.Button primary type="button" disabled={isBlock}>
-                  Войти
+                <S.Button
+                  primary
+                  type="button"
+                  disabled={isBlock}
+                  onClick={() => handleLogin()}
+                >
+                  {isLoading ? "Загрузка" : "Войти"}
                 </S.Button>
                 <S.Button type="button" onClick={() => toggle()}>
                   Зарегистрироваться
@@ -182,10 +255,10 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
               <S.Button
                 primary
                 type="button"
-                onClick={() => toggle()}
+                onClick={() => handleRegister()}
                 disabled={isBlock}
               >
-                Зарегистрироваться
+                {isLoadings ? "Загрузка" : "Зарегистрироваться"}
               </S.Button>
             )}
           </S.Form>

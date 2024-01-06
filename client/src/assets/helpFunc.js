@@ -9,6 +9,15 @@ export const formateDate = (date) => {
   /* return formatDistanceToNow(new Date(date)); */
 };
 
+export const hidePhone = (phone) => {
+  if (phone) {
+    const hide = " XXX XX XX";
+    /*  console.log(phone?.substring(0, 3)); */
+    return phone.substring(0, phone.length - 7) + hide;
+  }
+  return null;
+};
+
 export const searchPosts = (searchValueText, list) =>
   list.filter(
     ({ title, description }) =>
@@ -18,15 +27,14 @@ export const searchPosts = (searchValueText, list) =>
 
 export const validInput = (params) => {
   let result = {};
-  console.log(params);
   if (params.email) {
     result = EMAIL_REGEXP.test(params.email)
       ? { validate: true, color: "green", text: params.email }
       : { validate: false, color: "red", text: params.email };
-    console.log(result);
   } else if (params.password) {
     const minLength = 8;
     result =
+      params.password === params?.loginValue.passwordRepeat.text ||
       params?.password.length >= minLength
         ? { validate: true, color: "green", text: params.password }
         : { validate: false, color: "red", text: params.password };
@@ -35,12 +43,24 @@ export const validInput = (params) => {
       params?.loginValue.password.text === params?.passwordRepeat
         ? { validate: true, color: "green", text: params.passwordRepeat }
         : { validate: false, color: "red", text: params.passwordRepeat };
-  } else if (!params.email && !params.password && !params.passwordRepeat) {
-    result = {
-      validate: true,
-      color: "green",
-      text: null || params.name || params.family || params.city,
-    };
+  } else if (params.name) {
+    const minLength = 2;
+    result =
+      params?.name.length >= minLength
+        ? { validate: true, color: "green", text: params.name }
+        : { validate: false, color: "red", text: params.name };
+  } else if (params.surname) {
+    const minLength = 2;
+    result =
+      params?.surname.length >= minLength
+        ? { validate: true, color: "green", text: params.surname }
+        : { validate: false, color: "red", text: params.surname };
+  } else if (params.city) {
+    const minLength = 2;
+    result =
+      params?.city.length >= minLength
+        ? { validate: true, color: "green", text: params.city }
+        : { validate: false, color: "red", text: params.city };
   }
   return result;
 };

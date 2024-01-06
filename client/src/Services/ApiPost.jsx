@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { SERVER_URL } from "../Consts/Consts";
 
@@ -22,11 +24,17 @@ const DATA_TAG = { type: "POST", id: "LIST" };
 }; */
 
 export const ALLPOSTS = createApi({
-  reducerPath: "AllPostS",
-  tagTypes: ["POST"],
+  reducerPath: "AllPosts",
+  /*  tagTypes: ["POST", "AUTH"], */
   baseQuery: fetchBaseQuery({
     baseUrl: SERVER_URL,
-    //  refreshToken: refreshToken(),
+    prepareHeaders: (headers) => {
+      const token = localStorage?.getItem("access_token");
+      if (token) {
+        headers.set("content-type", "application/json");
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+    },
   }),
   endpoints: (builder) => ({
     getAllPosts: builder.query({
@@ -37,57 +45,57 @@ export const ALLPOSTS = createApi({
       ],
     }),
 
-    /*  getAllFavorite: builder.query({
-      query() {
+    getPostId: builder.query({
+      query: (id) => `ads/${id}`,
+      providesTags: (id) => [{ type: "POST", id }],
+    }),
+
+    userRegister: builder.mutation({
+      query(data) {
+        const { email, password, name, city, surname, role } = data;
         return {
-          url: "catalog/track/favorite/all/",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token_access")}`,
-          },
+          url: `/auth/register/`,
+          method: "POST",
+          body: { email, password, name, city, surname, role },
         };
       },
-      providesTags: (result = []) => [
-        ...result.map(({ id }) => ({ type: "Tracks", id })),
-        DATA_TAG,
-      ],
+      /*     invalidatesTags: (id) => [{ type: "POST", id }], */
+    }),
+
+    /*     userGet: builder.query({
+      query: () => `user`,
+      headers: {
+        Authorization: JSON.stringify(
+          `Bearer ${localStorage?.getItem("access_token")}`
+        ),
+      },
+      // providesTags: ["AUTH"],
     }), */
 
-    getTrack: builder.query({
-      query(id) {
-        return {
-          url: `catalog/track/${id}`,
-        };
-      },
-      providesTags: (result = []) => [
-        ...(Array.isArray(result)
-          ? result.map((track) => ({ type: "Tracks", id: track?.id }))
-          : []),
-        DATA_TAG,
-      ],
+    userGet: builder.query({
+      query: () => `user/`,
+      providesTags: ["AUTH"],
     }),
 
-    getCategory: builder.query({
-      query: (data) => `catalog/selection/${data}`,
-      providesTags: (result = []) => [
-        ...(Array.isArray(result)
-          ? result.map(({ id }) => ({ type: "Tracks", id }))
-          : []),
-        DATA_TAG,
-      ],
-    }),
-
-    likeTrack: builder.mutation({
+    userLogin: builder.mutation({
       query(data) {
-        const { id } = data;
+        const { email, password } = data;
         return {
-          url: `/catalog/track/${id}/favorite/`,
+          url: `/auth/login/`,
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token_access")}`,
-          },
+          body: { email, password },
         };
       },
-      invalidatesTags: (track) => [{ type: "Tracks", id: track?.id }],
+      transformResponse: (response) => {
+        response.isAuth = true;
+        Object.entries(response).map(([key, value]) =>
+          localStorage.setItem(key, value)
+        );
+
+        return response;
+      },
+
+      invalidatesTags: ["AUTH"],
     }),
 
     DislikeTrack: builder.mutation({
@@ -108,9 +116,13 @@ export const ALLPOSTS = createApi({
 
 export const {
   useGetAllPostsQuery,
+  useGetPostIdQuery,
+  useUserGetQuery,
+  useUserRegisterMutation,
+  useUserLoginMutation,
   /*   useGetAllFavoriteQuery,
   useGetAllTrackQuery,
-  useLikeTrackMutation,
+  useUserRegisterMutation,
   useDislikeTrackMutation,
   useGetCategoryQuery,
   useRefreshTokenMutation,

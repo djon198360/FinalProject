@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { validInput } from "../assets/helpFunc";
 import * as S from "./Style";
 
-export const ModalRegister = ({ isVisible = false, onClose }) => {
+export const ModalAddAds = ({ isVisible = false, onClose }) => {
   const [login, setLogin] = useState(true);
   const [loginValue, setLoginValue] = useState({
     email: "",

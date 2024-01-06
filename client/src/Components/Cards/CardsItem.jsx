@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import * as S from "./Style";
 import { SERVER_URL } from "../../Consts/Consts";
 import { formateDate } from "../../assets/helpFunc";
@@ -11,9 +12,9 @@ export const RenderCardItem = (props) => {
     <S.CardItem id={id}>
       <S.CardBody>
         <S.CardImage>
-          <S.A>
+          <Link to={`/article/${id}`}>
             <S.Image src={image} alt={title} title={description} />
-          </S.A>
+          </Link>
         </S.CardImage>
         <S.CardContent>
           <S.A>

@@ -1,4 +1,6 @@
+/* import { Routes, Route, } from "react-router-dom"; */
 import { Routes, Route } from "react-router-dom";
+
 import { Pages } from "../Pages/index";
 /* import { ProtectedRoute } from "./ProtectedRoute"; */
 /* import Context from "../AuthForm/AuthForm"; */
@@ -11,6 +13,7 @@ function AppRoutes() {
       <Route path="/" element={<Pages.Main />} />
       <Route path="/profile" element={<Pages.Profile />} />
       <Route path="*" element={<Pages.NotFound />} />
+      <Route path="/article/:id" element={<Pages.Article />} />
 
       {/*       <Route element={<ProtectedRoute isAllowed={Boolean(user)} />}>
        <Route path="/" element={<Pages.Main />} /> 

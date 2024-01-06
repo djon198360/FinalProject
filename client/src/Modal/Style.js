@@ -74,6 +74,7 @@ export const LogoImg = styled.img`
 export const Input = styled.input.attrs((props) => ({
   type: props.type,
   color: props.color,
+  name: props.name,
 }))`
   width: 100%;
   border-top: none;
@@ -139,4 +140,8 @@ export const SlideIn = keyframes`
     to {
       transform: translateY(0);
     }
+`;
+
+export const ErrorSpan = styled.span`
+  color: red;
 `;

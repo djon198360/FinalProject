@@ -1,23 +1,34 @@
 import { useState } from "react";
-import { isAuth } from "../../Consts/Consts";
-import { ModalAuth } from "../../Modal/SignIn";
+import { ModalAuth } from "../../Modal/Auth";
+import { ModalAddAds } from "../../Modal/SignUp";
+/* import { store } from "../../Store/Store"; */
 import * as S from "./Style";
 
 export const RenderHeader = () => {
+  const isAuth = localStorage?.getItem("isAuth")
+    ? JSON.parse(localStorage.getItem("isAuth"))
+    : false;
   const [isModal, setModal] = useState(false);
+
   return (
     <S.Header>
-      <ModalAuth isVisible={isModal} onClose={() => setModal(false)} />
       <S.Nav>
         {isAuth ? (
           <>
-            <S.Button>Разместить объявление</S.Button>
+            <ModalAddAds isVisible={isModal} onClose={() => setModal(false)} />
+            <S.ButtonLk onClick={() => setModal(true)}>Выйти</S.ButtonLk>
+            <S.Button onClick={() => setModal(true)}>
+              Разместить объявление
+            </S.Button>
             <S.ButtonLk>Личный кабинет</S.ButtonLk>
           </>
         ) : (
-          <S.Button onClick={() => setModal(true)}>
-            Вход в личный кабинет
-          </S.Button>
+          <>
+            <ModalAuth isVisible={isModal} onClose={() => setModal(false)} />
+            <S.Button onClick={() => setModal(true)}>
+              Вход в личный кабинет
+            </S.Button>
+          </>
         )}
       </S.Nav>
     </S.Header>

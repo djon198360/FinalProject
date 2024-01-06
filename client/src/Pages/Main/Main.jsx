@@ -16,16 +16,20 @@ export const Main = () => {
   });
   const isEmptyList = !isLoading && !data?.length;
   if (error) {
-    setErrors(error.message);
+    if (error.status === "FETCH_ERROR") {
+      console.log("ошибка соединения с базой ");
+      setErrors(error.status);
+    }
+    console.log(error);
     return (
       <h3>
-        Не удалось загрузить плейлист, попробуйте позже:
+        Не удалось загрузить объявления, попробуйте позже:
         {JSON.stringify(error.data, null, 2)}
       </h3>
     );
   }
   if (isEmptyList) {
-    setErrors("Список треков пуст");
+    console.log("Список треков пуст");
   }
 
   const filterPosts = () => {
