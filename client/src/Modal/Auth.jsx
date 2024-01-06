@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
 import { validInput } from "../assets/helpFunc";
 import { lang } from "../assets/Language";
-/* import { isAuth } from "../Consts/Consts"; */
 import {
   useUserRegisterMutation,
   useUserLoginMutation,
-  useUserGetQuery,
 } from "../Services/ApiPost";
 import * as S from "./Style";
 
 export const ModalAuth = ({ isVisible = false, onClose }) => {
   const [registerApi, isLoadings] = useUserRegisterMutation();
-  const [loginUserApi, { data, isLoading }] = useUserLoginMutation();
+  const [loginUserApi, { isLoading, isError }] = useUserLoginMutation();
   const [isLogin, setLogin] = useState(true);
   const [isRegister, setRegister] = useState(false);
   const [loginValue, setLoginValue] = useState({
@@ -21,33 +19,22 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
     role: "user",
   });
 
-  const userId = data?.access_token;
-
-  // Затем получаем проекты пользователя
-  const { data: projects } = useUserGetQuery(["projects", userId], {
-    // Запрос не будет выполняться до получения userId
-    enabled: !!userId,
-  });
-  console.log(projects);
   const [errorMessage, setErrorMessage] = useState(null);
-  // const [userGetApi, { isLoadin }] = useUserGetQuery();
   const handleLogin = async () => {
     const result = await loginUserApi({
       email: loginValue.email.text,
       password: loginValue.password.text,
     });
-    if (result.data) {
-      onClose();
-    }
-
-    if (result?.error) {
-      setErrorMessage(result.error.data);
+    if (isError) {
       if (result?.error.status === 401) {
-        console.log("Неверный логин , или пароль");
+        setErrorMessage(result.error.data);
       }
       if (result?.error.status === 422) {
-        console.log("Неверный логин , или пароль");
+        setErrorMessage(result.error.data);
       }
+    }
+    if (result) {
+      onClose();
     }
   };
 
@@ -63,10 +50,8 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
     if (result?.error) {
       if (result?.error.status === 401) {
         setErrorMessage(result.error.detail);
-        console.log("Неверный логин , или пароль");
       }
     }
-    //  results.error ? alert("error") : alert("succes");
   };
   const [isBlock, setisBlock] = useState(true);
   const keydownHandler = ({ key }) => {
@@ -153,7 +138,7 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
               color={loginValue.email?.color}
               type="text"
               placeholder="email *"
-              autocomplete="username"
+              autoComplete="username"
               name="email"
               value={loginValue.email.text}
               onChange={(e) => {
@@ -167,7 +152,7 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
               color={loginValue.password?.color}
               type="password"
               placeholder="Пароль *"
-              autocomplete="current-password"
+              autoComplete="current-password"
               name="password"
               value={loginValue.password?.text}
               onChange={(e) => {
@@ -240,7 +225,7 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
             {isLogin ? (
               <>
                 <S.Button
-                  primary
+                  $primary
                   type="button"
                   disabled={isBlock}
                   onClick={() => handleLogin()}
@@ -253,7 +238,7 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
               </>
             ) : (
               <S.Button
-                primary
+                $primary
                 type="button"
                 onClick={() => handleRegister()}
                 disabled={isBlock}

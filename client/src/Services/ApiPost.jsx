@@ -1,7 +1,6 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { SERVER_URL } from "../Consts/Consts";
+/* import { store } from "../Store/Store"; */
 
 const DATA_TAG = { type: "POST", id: "LIST" };
 
@@ -36,6 +35,7 @@ export const ALLPOSTS = createApi({
       }
     },
   }),
+
   endpoints: (builder) => ({
     getAllPosts: builder.query({
       query: () => "ads/",
@@ -59,25 +59,52 @@ export const ALLPOSTS = createApi({
           body: { email, password, name, city, surname, role },
         };
       },
-      /*     invalidatesTags: (id) => [{ type: "POST", id }], */
+      invalidatesTags: ["AUTH"],
     }),
-
-    /*     userGet: builder.query({
-      query: () => `user`,
-      headers: {
-        Authorization: JSON.stringify(
-          `Bearer ${localStorage?.getItem("access_token")}`
-        ),
-      },
-      // providesTags: ["AUTH"],
-    }), */
 
     userGet: builder.query({
       query: () => `user/`,
+      transformResponse: (response) => {
+        Object.entries(response).map(([key, value]) =>
+          localStorage.setItem(key, value)
+        );
+      },
       providesTags: ["AUTH"],
     }),
 
     userLogin: builder.mutation({
+      /*   async queryFn(data) {
+        const state = { token: "", info: "" };
+        const { email, password } = data;
+        const response = await fetch(`${SERVER_URL}auth/login/`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        });
+        const token = await response.json();
+        token.isAuth = true;
+        Object.entries(token).map(([key, value]) =>
+          localStorage.setItem(key, value)
+        );
+        state.token = "ok";
+        if (response.ok) {
+          ALLPOSTS.endpoint.userGet();
+          const res = await fetch(`${SERVER_URL}user/`, {
+            method: "GET",
+            headers: {
+              "content-type": "application/json",
+              Authorization: `Bearer ${token.access_token}`,
+            },
+          });
+          Object.entries(await res.json()).map(([key, value]) =>
+            localStorage.setItem(key, value)
+          );
+          state.info = "ok";
+        }
+      }, */
+
       query(data) {
         const { email, password } = data;
         return {
@@ -86,30 +113,26 @@ export const ALLPOSTS = createApi({
           body: { email, password },
         };
       },
-      transformResponse: (response) => {
+      transformResponse: async (response) => {
         response.isAuth = true;
+        const info = await fetch(`${SERVER_URL}user/`, {
+          method: "GET",
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${response.access_token}`,
+          },
+        });
+        const infos = await info.json();
+        Object.entries(infos).map(([key, value]) =>
+          localStorage.setItem(key, value)
+        );
         Object.entries(response).map(([key, value]) =>
           localStorage.setItem(key, value)
         );
 
         return response;
       },
-
       invalidatesTags: ["AUTH"],
-    }),
-
-    DislikeTrack: builder.mutation({
-      query(data) {
-        const { id } = data;
-        return {
-          url: `/catalog/track/${id}/favorite/`,
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token_access")}`,
-          },
-        };
-      },
-      invalidatesTags: (track) => [{ type: "Tracks", id: track?.id }],
     }),
   }),
 });
@@ -120,11 +143,4 @@ export const {
   useUserGetQuery,
   useUserRegisterMutation,
   useUserLoginMutation,
-  /*   useGetAllFavoriteQuery,
-  useGetAllTrackQuery,
-  useUserRegisterMutation,
-  useDislikeTrackMutation,
-  useGetCategoryQuery,
-  useRefreshTokenMutation,
-  useGetTrackIdQuery, */
 } = ALLPOSTS;

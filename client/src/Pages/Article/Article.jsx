@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useGetPostIdQuery } from "../../Services/ApiPost";
 import { formateDate, hidePhone } from "../../assets/helpFunc";
 import { SERVER_URL, NoImage } from "../../Consts/Consts";
@@ -9,18 +9,10 @@ export const Article = () => {
   /*   const isAuth = true; */
   const history = useNavigate();
   const [hide, setHide] = useState(true);
-  const location = useLocation();
-  const { id } = useParams();
+  const { id: ids } = useParams();
 
-  const { data, isLoading, error } = useGetPostIdQuery(id);
-  console.log(id);
-  console.log(location);
-  console.log(isLoading);
-  console.log(error);
+  const { data, isLoading, error } = useGetPostIdQuery(ids);
 
-  if (data) {
-    console.log(data);
-  }
   /*   useEffect(() => {
     console.log(datas);
 
@@ -62,17 +54,16 @@ export const Article = () => {
             <S.ArticleFiilImg>
               <S.ArticleImg>
                 <S.ArticleImgImg
+                  key="001"
                   src={`${SERVER_URL}${data?.images[0]?.url || NoImage}`}
                 />
               </S.ArticleImg>
               <S.ArticleImgBar>
+                {error || null}
                 {data?.images
-                  ? data.images.map((url, ids) => (
-                      <S.ArticleImgBarDiv>
-                        <S.ArticleImgImg
-                          src={`${SERVER_URL}${url.url}`}
-                          id={ids}
-                        />
+                  ? data.images.map(({ url, id }) => (
+                      <S.ArticleImgBarDiv key={id}>
+                        <S.ArticleImgImg src={`${SERVER_URL}${url}`} key={id} />
                       </S.ArticleImgBarDiv>
                     ))
                   : null}
