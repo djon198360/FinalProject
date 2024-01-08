@@ -2,7 +2,11 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useGetPostIdQuery } from "../../Services/ApiPost";
 import { RenderHeadBack } from "../../Components/HeadBack/Back";
-import { formateDate, hidePhone } from "../../assets/helpFunc";
+import {
+  formatDateMonth,
+  hidePhone,
+  formatDateWeek,
+} from "../../assets/helpFunc";
 import { SERVER_URL, NoImage } from "../../Consts/Consts";
 import * as S from "./Style";
 
@@ -14,15 +18,6 @@ export const Article = () => {
   const { id: ids } = useParams();
 
   const { data, isLoading, error } = useGetPostIdQuery(ids);
-
-  /*   useEffect(() => {
-    console.log(datas);
-
-  }, [data]); */
-
-  /* const { id||null, title, description, price, user, images, user_id, created_on } =
-    datas; */
-  /* const handleHideShowPhone = hide ? setHide(false) : setHide(true); */
   const handleHideShowPhone = () => {
     if (hide) {
       setHide(false);
@@ -65,7 +60,9 @@ export const Article = () => {
                 {isLoading ? (
                   <S.ArticleDate></S.ArticleDate>
                 ) : (
-                  <S.ArticleDate>{formateDate(data?.created_on)}</S.ArticleDate>
+                  <S.ArticleDate>
+                    {formatDateWeek(data?.created_on)}
+                  </S.ArticleDate>
                 )}
                 <S.ArticleSity>{data?.user.city}</S.ArticleSity>
                 <S.ArticleLink>23 отзыва</S.ArticleLink>
@@ -100,7 +97,7 @@ export const Article = () => {
                     <S.AuthorAbout></S.AuthorAbout>
                   ) : (
                     <S.AuthorAbout>
-                      Продает товары с {formateDate(data?.user.sells_from)}
+                      Продает товары с {formatDateMonth(data?.user.sells_from)}
                     </S.AuthorAbout>
                   )}
                 </S.AuthorCont>

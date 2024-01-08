@@ -62,6 +62,7 @@ export const AvatarImg = styled.img.attrs((props) => ({
   display: block;
   -o-object-fit: cover;
   object-fit: cover;
+  border-radius: 50%;
 `;
 
 export const AvatarSettingLink = styled.a`

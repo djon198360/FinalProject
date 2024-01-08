@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RenderHeadBack } from "../../Components/HeadBack/Back";
-import { NoImage } from "../../Consts/Consts";
+import { NoImage, SERVER_URL } from "../../Consts/Consts";
 import {
   refreshToken,
   useUserGetQuery,
@@ -8,23 +8,15 @@ import {
   useSetEditMyInfoMutation,
 } from "../../Services/ApiPost";
 import { RenderCardItem } from "../../Components/Cards/CardsItem";
-/* import { ValidProfileInput } from "../../assets/helpFunc"; */
 import * as S from "./Style";
 
 export const Profile = () => {
-  const { data, error, refetch: refetchUser } = useUserGetQuery();
+  let userInfoData = "";
+  const { data, isLoading, error, refetch: refetchUser } = useUserGetQuery();
   if (error && error.status === 401) {
-    refreshToken(() => refetchUser());
+    // refreshToken(() => refetchUser());
+    refetchUser();
   }
-
-  const {
-    data: dataPost,
-    isLoading: isLoadingPost,
-    error: errorPost,
-  } = useGetAllMyPostQuery();
-
-  const [editInfo, { isLoadings, errors }] = useSetEditMyInfoMutation();
-
   const [userInfo, setUserInfo] = useState({
     avatar: data?.avatar || NoImage,
     name: data?.name || "NoName",
@@ -32,14 +24,23 @@ export const Profile = () => {
     city: data?.city || "Неизвестен",
     phone: data?.phone || "",
   });
+  const {
+    data: dataPost,
+    isLoading: isLoadingPost,
+    error: errorPost,
+    refetch: refetchUserPost,
+  } = useGetAllMyPostQuery();
 
+  if (errorPost) {
+    //  refreshToken(() => refetchUserPost);
+    refetchUserPost();
+  }
+
+  const [editInfo, { isLoadings, errors }] = useSetEditMyInfoMutation();
   const UpdateInputValue = (e) => {
     setUserInfo({
       ...userInfo,
-      /*  [e.target.name]: ValidProfileInput({ */
       [e.target.name]: e.target.value,
-      /*      userInfo,
-      }), */
     });
   };
   const ValidPhone = (e) => {
@@ -51,7 +52,6 @@ export const Profile = () => {
     setUserInfo({
       ...userInfo,
       [e.target.name]: resultInput,
-      /* userInfo, */
     });
   };
 
@@ -59,22 +59,42 @@ export const Profile = () => {
     const result = await editInfo(userInfo);
     return result;
   };
-  console.log(userInfo);
+  if (data) {
+    userInfoData = data;
+  }
+
+  useEffect(() => {}, [isLoading]);
+
   return (
     <S.Main>
       <S.Container>
         <S.CenterBlock>
           <RenderHeadBack />
-          <S.TitleH2>Здравствуйте, {userInfo.name} !</S.TitleH2>
+          <S.TitleH2>
+            Здравствуйте, {userInfoData ? userInfoData.name : "Нет имени"} !
+          </S.TitleH2>
           <S.Profile>
             <S.Content>
               <S.ProfileTitleH3>Настройки профиля</S.ProfileTitleH3>
               <S.Settings>
                 <S.Left>
                   <S.Avatar>
-                    <S.AvatarImg src={userInfo.avatar} alt=""></S.AvatarImg>
+                    <S.AvatarImg
+                      src={
+                        userInfo
+                          ? SERVER_URL + userInfo.avatar
+                          : SERVER_URL + NoImage
+                      }
+                      alt={userInfoData ? userInfoData.name : "Нет имени"}
+                    ></S.AvatarImg>
                   </S.Avatar>
-                  <S.AvatarSettingLink>Заменить</S.AvatarSettingLink>
+                  <S.AvatarSettingLink
+                    onClick={() => {
+                      refreshToken();
+                    }}
+                  >
+                    Заменить
+                  </S.AvatarSettingLink>
                 </S.Left>
                 <S.Right>
                   <S.SettingsForm>
@@ -82,7 +102,7 @@ export const Profile = () => {
                       <S.Label for="name">Имя</S.Label>
                       <S.Fname
                         type="text"
-                        value={userInfo.name}
+                        value={userInfo ? userInfo.name : "Неуказано"}
                         onChange={(e) => {
                           UpdateInputValue(e);
                         }}
@@ -93,7 +113,7 @@ export const Profile = () => {
                       <S.Label for="surname">Фамилия</S.Label>
                       <S.Lname
                         type="text"
-                        value={userInfo.surname}
+                        value={userInfo ? userInfo.surname : "Неуказана"}
                         onChange={(e) => {
                           UpdateInputValue(e);
                         }}
@@ -104,7 +124,7 @@ export const Profile = () => {
                       <S.Label for="city">Город</S.Label>
                       <S.City
                         type="text"
-                        value={userInfo.city}
+                        value={userInfo ? userInfo.city : "Неуказан"}
                         onChange={(e) => {
                           UpdateInputValue(e);
                         }}
@@ -115,7 +135,7 @@ export const Profile = () => {
                       <S.Label for="phone">Телефон</S.Label>
                       <S.Phone
                         type="tel"
-                        value={userInfo.phone}
+                        value={userInfo ? userInfo.phone : "Неуказан"}
                         onChange={(e) => {
                           ValidPhone(e);
                         }}
@@ -131,7 +151,7 @@ export const Profile = () => {
                       }}
                       type="button"
                     >
-                      {errors || null}
+                      {errors || error || errorPost ? "Error" : null}
                       {isLoadings ? "Отправка данных" : "Сохранить"}
                     </S.Button>
                   </S.SettingsForm>
@@ -144,11 +164,11 @@ export const Profile = () => {
         <S.MainContent>
           <S.MainCards>
             {errorPost ? "Error" : null}
-            {isLoadingPost
-              ? "Идет загрузка.."
-              : dataPost.map((post) => (
+            {!isLoadingPost && dataPost && !errorPost
+              ? dataPost.map((post) => (
                   <RenderCardItem post={post} key={post.id}></RenderCardItem>
-                ))}
+                ))
+              : "Идет загрузка.."}
           </S.MainCards>
         </S.MainContent>
       </S.Container>

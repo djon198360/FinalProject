@@ -13,6 +13,7 @@ function AppRoutes() {
       <Route path="/" element={<Pages.Main />} />
       <Route path="/profile/" element={<Pages.Profile />} />
       <Route path="*" element={<Pages.NotFound />} />
+      <Route path="/profile/:id" element={<Pages.SellerProfile />} />
       <Route path="/article/:id" element={<Pages.Article />} />
 
       {/*       <Route element={<ProtectedRoute isAllowed={Boolean(user)} />}>

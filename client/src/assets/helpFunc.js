@@ -1,20 +1,37 @@
-import { formatRelative, subDays /* formatDistanceToNow */ } from "date-fns";
-import { ru } from "date-fns/locale";
+/* import { formatRelative, subDays  } from "date-fns";
+import { ru } from "date-fns/locale"; */
 
 const EMAIL_REGEXP =
   /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu;
 
 const PHONE_REGEXP = /^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){11,14}(\s*)?$/iu;
-export const formateDate = (date) => {
-  return formatRelative(subDays(date, 0), new Date(), { locale: ru });
-  /* return formatDistanceToNow(new Date(date)); */
+
+export const formatDateWeek = (date) => {
+  const formatDate = new Intl.DateTimeFormat("ru", {
+    weekday: "long",
+    hour: "numeric",
+    minute: "numeric",
+  });
+  return formatDate.format(new Date(date));
+};
+
+export const formatDateMonth = (date) => {
+  const formatDate = new Intl.DateTimeFormat("ru", {
+    month: "long",
+    year: "numeric",
+  });
+  return formatDate.format(new Date(date));
 };
 
 export const hidePhone = (phone) => {
   if (phone) {
     const hide = " XXX XX XX";
+    const phones = phone.replace(
+      /(\d{1,4})(\d{3})(\d{3})(\d{2})(\d{2})/,
+      "+7 ($2) $3-$4-$5"
+    );
     /*  console.log(phone?.substring(0, 3)); */
-    return phone.substring(0, phone.length - 7) + hide;
+    return phones.substring(0, phones.length - 9) + hide;
   }
   return null;
 };
@@ -29,10 +46,6 @@ export const searchPosts = (searchValueText, list) =>
 export const ValidProfileInput = (params) => {
   let result = {};
   if (params.phone) {
-    console.log(params.phone);
-    /*     resultInput = resultInput
-      .replace(/\D+/g, "")
-      .replace(/(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/, "+7 ($2) $3-$4-$5"); */
     result = PHONE_REGEXP.test(params.phone) ? params.phone : null;
   }
   if (params.name) {
@@ -47,7 +60,6 @@ export const ValidProfileInput = (params) => {
     const minLength = 2;
     result = params?.city.length >= minLength ? params.city : "";
   }
-  console.log(result);
   return result;
 };
 
@@ -89,4 +101,20 @@ export const validInput = (params) => {
         : { validate: false, color: "red", text: params.city };
   }
   return result;
+};
+
+export const createQuery = (params) => {
+  const searchQuery = new URLSearchParams();
+  Object.entries(params).map(([key, value]) =>
+    value !== undefined ? searchQuery.set(key, String(value)) : null
+  );
+  return searchQuery.toString();
+};
+
+export const userSearchId = (params) => {
+  console.log(params);
+  // const userIdArray = params.data.find(({ user }) => user === params.ids);
+  const userIdArray = params?.data.filter(({ id }) => params.ids.includes(id));
+  console.log(userIdArray[0]);
+  return userIdArray[0];
 };

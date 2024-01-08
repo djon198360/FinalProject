@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { SERVER_URL } from "../Consts/Consts";
-/* import { store } from "../Store/Store"; */
+import { createQuery } from "../assets/helpFunc";
+/* import { setToken } from "../Store/Slice/SliceAuth"; */
 
 const DATA_TAG = { type: "POST", id: "LIST" };
 
@@ -18,16 +19,19 @@ export const refreshToken = async (functionCallback) => {
   });
   const data = await token.json();
   if (!token.ok) {
-    throw new Error("error");
+    throw data.error;
   }
-  localStorage.setItem("access_token", data.access_token);
-  localStorage.setItem("refresh_token", data.refresh_token);
-  if (functionCallback) {
-    functionCallback();
+  if (token.ok) {
+    localStorage.setItem("access_token", data.access_token);
+    localStorage.setItem("refresh_token", data.refresh_token);
+    if (functionCallback) {
+      functionCallback();
+    }
   }
+  return token;
 };
 
-export const ALLPOSTS = createApi({
+export const AllPosts = createApi({
   reducerPath: "AllPosts",
   /*  tagTypes: ["POST", "AUTH"], */
   baseQuery: fetchBaseQuery({
@@ -43,7 +47,14 @@ export const ALLPOSTS = createApi({
 
   endpoints: (builder) => ({
     getAllPosts: builder.query({
-      query: (query) => `ads/?${query}`,
+      query: (query) => {
+        const querySearch = createQuery(query);
+        return {
+          url: `/ads/?${querySearch}`,
+          method: "GET",
+          headers: { "content-type": "application/json" },
+        };
+      },
       providesTags: (result = []) => [
         ...result.map((id) => ({ type: "POST", id })),
         DATA_TAG,
@@ -69,7 +80,7 @@ export const ALLPOSTS = createApi({
           body: { name, city, surname, role, phone },
         };
       },
-      invalidatesTags: ["AUTH"],
+      invalidatesTags: ["USER"],
     }),
     userRegister: builder.mutation({
       query(data) {
@@ -83,14 +94,11 @@ export const ALLPOSTS = createApi({
       invalidatesTags: ["AUTH"],
     }),
 
-    userGet: builder.query({
-      //  query: () => `user/`,
-      query() {
+    userGetAll: builder.query({
+      query(query) {
+        const querySearch = createQuery(query);
         return {
-          url: `user/`,
-          /*           headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          }, */
+          url: `user/all/?${querySearch}`,
         };
       },
       /* transformResponse: (response) => {
@@ -101,39 +109,16 @@ export const ALLPOSTS = createApi({
       providesTags: ["AUTH"],
     }),
 
-    userLogin: builder.mutation({
-      /*   async queryFn(data) {
-        const state = { token: "", info: "" };
-        const { email, password } = data;
-        const response = await fetch(`${SERVER_URL}auth/login/`, {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        });
-        const token = await response.json();
-        token.isAuth = true;
-        Object.entries(token).map(([key, value]) =>
-          localStorage.setItem(key, value)
-        );
-        state.token = "ok";
-        if (response.ok) {
-          ALLPOSTS.endpoint.userGet();
-          const res = await fetch(`${SERVER_URL}user/`, {
-            method: "GET",
-            headers: {
-              "content-type": "application/json",
-              Authorization: `Bearer ${token.access_token}`,
-            },
-          });
-          Object.entries(await res.json()).map(([key, value]) =>
-            localStorage.setItem(key, value)
-          );
-          state.info = "ok";
-        }
-      }, */
+    userGet: builder.query({
+      query() {
+        return {
+          url: `user/`,
+        };
+      },
+      providesTags: ["USER"],
+    }),
 
+    userLogin: builder.mutation({
       query(data) {
         const { email, password } = data;
         return {
@@ -161,7 +146,7 @@ export const ALLPOSTS = createApi({
 
         return response;
       },
-      invalidatesTags: ["AUTH"],
+      invalidatesTags: ["USER"],
     }),
   }),
 });
@@ -170,8 +155,9 @@ export const {
   useGetAllPostsQuery,
   useGetPostIdQuery,
   useGetAllMyPostQuery,
+  useUserGetAllQuery,
   useUserGetQuery,
   useUserRegisterMutation,
   useUserLoginMutation,
   useSetEditMyInfoMutation,
-} = ALLPOSTS;
+} = AllPosts;

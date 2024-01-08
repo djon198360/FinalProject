@@ -1,0 +1,31 @@
+  /*   async queryFn(data) {
+        const state = { token: "", info: "" };
+        const { email, password } = data;
+        const response = await fetch(`${SERVER_URL}auth/login/`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        });
+        const token = await response.json();
+        token.isAuth = true;
+        Object.entries(token).map(([key, value]) =>
+          localStorage.setItem(key, value)
+        );
+        state.token = "ok";
+        if (response.ok) {
+          ALLPOSTS.endpoint.userGet();
+          const res = await fetch(`${SERVER_URL}user/`, {
+            method: "GET",
+            headers: {
+              "content-type": "application/json",
+              Authorization: `Bearer ${token.access_token}`,
+            },
+          });
+          Object.entries(await res.json()).map(([key, value]) =>
+            localStorage.setItem(key, value)
+          );
+          state.info = "ok";
+        }
+      }, */
