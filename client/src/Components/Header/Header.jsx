@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ModalAuth } from "../../Modal/Auth";
 import { ModalAddAds } from "../../Modal/SignUp";
 /* import { store } from "../../Store/Store"; */
 import * as S from "./Style";
 
 export const RenderHeader = () => {
+  const history = useNavigate();
   const isAuth = localStorage?.getItem("isAuth")
     ? JSON.parse(localStorage.getItem("isAuth"))
     : false;
@@ -20,7 +22,13 @@ export const RenderHeader = () => {
             <S.Button onClick={() => setModal(true)}>
               Разместить объявление
             </S.Button>
-            <S.ButtonLk>Личный кабинет</S.ButtonLk>
+            <S.ButtonLk
+              onClick={() => {
+                history("/profile/");
+              }}
+            >
+              Личный кабинет
+            </S.ButtonLk>
           </>
         ) : (
           <>

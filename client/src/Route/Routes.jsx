@@ -11,7 +11,7 @@ function AppRoutes() {
       {/*       <Route path="/login" element={<SigninRender />} />
       <Route path="/register" element={<SignupRender />} /> */}
       <Route path="/" element={<Pages.Main />} />
-      <Route path="/profile" element={<Pages.Profile />} />
+      <Route path="/profile/" element={<Pages.Profile />} />
       <Route path="*" element={<Pages.NotFound />} />
       <Route path="/article/:id" element={<Pages.Article />} />
 

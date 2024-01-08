@@ -4,23 +4,28 @@ import { SERVER_URL } from "../Consts/Consts";
 
 const DATA_TAG = { type: "POST", id: "LIST" };
 
-/* export const refreshToken = async (functionCallback) => {
-  const token = await fetch(`${APIHOST}user/token/refresh/`, {
-    method: "POST",
+export const refreshToken = async (functionCallback) => {
+  const tokens = {
+    refresh_token: localStorage.getItem("refresh_token"),
+    access_token: localStorage.getItem("access_token"),
+  };
+  const token = await fetch(`${SERVER_URL}auth/login/`, {
+    method: "PUT",
     headers: {
       "content-type": "application/json",
     },
-    body: JSON.stringify({ refresh: localStorage.getItem("token_refresh") }),
+    body: JSON.stringify(tokens),
   });
   const data = await token.json();
   if (!token.ok) {
-    throw data;
+    throw new Error("error");
   }
-  localStorage.setItem("token_access", data.access);
+  localStorage.setItem("access_token", data.access_token);
+  localStorage.setItem("refresh_token", data.refresh_token);
   if (functionCallback) {
     functionCallback();
   }
-}; */
+};
 
 export const ALLPOSTS = createApi({
   reducerPath: "AllPosts",
@@ -38,7 +43,7 @@ export const ALLPOSTS = createApi({
 
   endpoints: (builder) => ({
     getAllPosts: builder.query({
-      query: () => "ads/",
+      query: (query) => `ads/?${query}`,
       providesTags: (result = []) => [
         ...result.map((id) => ({ type: "POST", id })),
         DATA_TAG,
@@ -50,6 +55,22 @@ export const ALLPOSTS = createApi({
       providesTags: (id) => [{ type: "POST", id }],
     }),
 
+    getAllMyPost: builder.query({
+      query: () => `ads/me`,
+      providesTags: (id) => [{ type: "POST", id }],
+    }),
+
+    setEditMyInfo: builder.mutation({
+      query(data) {
+        const { name, city, surname, role, phone } = data;
+        return {
+          url: `user/`,
+          method: "PATCH",
+          body: { name, city, surname, role, phone },
+        };
+      },
+      invalidatesTags: ["AUTH"],
+    }),
     userRegister: builder.mutation({
       query(data) {
         const { email, password, name, city, surname, role } = data;
@@ -63,12 +84,20 @@ export const ALLPOSTS = createApi({
     }),
 
     userGet: builder.query({
-      query: () => `user/`,
-      transformResponse: (response) => {
+      //  query: () => `user/`,
+      query() {
+        return {
+          url: `user/`,
+          /*           headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          }, */
+        };
+      },
+      /* transformResponse: (response) => {
         Object.entries(response).map(([key, value]) =>
           localStorage.setItem(key, value)
-        );
-      },
+        ); 
+      }, */
       providesTags: ["AUTH"],
     }),
 
@@ -140,7 +169,9 @@ export const ALLPOSTS = createApi({
 export const {
   useGetAllPostsQuery,
   useGetPostIdQuery,
+  useGetAllMyPostQuery,
   useUserGetQuery,
   useUserRegisterMutation,
   useUserLoginMutation,
+  useSetEditMyInfoMutation,
 } = ALLPOSTS;

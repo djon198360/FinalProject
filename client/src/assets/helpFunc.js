@@ -4,6 +4,7 @@ import { ru } from "date-fns/locale";
 const EMAIL_REGEXP =
   /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu;
 
+const PHONE_REGEXP = /^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){11,14}(\s*)?$/iu;
 export const formateDate = (date) => {
   return formatRelative(subDays(date, 0), new Date(), { locale: ru });
   /* return formatDistanceToNow(new Date(date)); */
@@ -24,6 +25,31 @@ export const searchPosts = (searchValueText, list) =>
       title?.toLowerCase().includes(searchValueText.toLowerCase()) ||
       description?.toLowerCase().includes(searchValueText.toLowerCase())
   );
+
+export const ValidProfileInput = (params) => {
+  let result = {};
+  if (params.phone) {
+    console.log(params.phone);
+    /*     resultInput = resultInput
+      .replace(/\D+/g, "")
+      .replace(/(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/, "+7 ($2) $3-$4-$5"); */
+    result = PHONE_REGEXP.test(params.phone) ? params.phone : null;
+  }
+  if (params.name) {
+    const minLength = 2;
+    result = params?.name.length >= minLength ? params.name : "";
+  }
+  if (params.surname) {
+    const minLength = 2;
+    result = params?.surname.length >= minLength ? params.surname : "";
+  }
+  if (params.city) {
+    const minLength = 2;
+    result = params?.city.length >= minLength ? params.city : "";
+  }
+  console.log(result);
+  return result;
+};
 
 export const validInput = (params) => {
   let result = {};

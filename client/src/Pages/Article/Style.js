@@ -3,37 +3,11 @@ import styled from "styled-components";
 export const Main = styled.main`
   margin: 0 auto;
 `;
-
 export const Container = styled.div`
   max-width: 1178px;
   margin: 0 auto;
   padding: 0px 5px;
 `;
-
-export const Menu = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 11px 0;
-  padding: 43px 5px 77px;
-`;
-
-export const MenuImg = styled.img.attrs((props) => ({
-  src: props.src,
-  alt: props.alt,
-}))`
-  width: 54px;
-  height: auto;
-`;
-
-export const Form = styled.form`
-  margin-left: 60px;
-  max-width: 1044px;
-  width: 100%;
-  display: flex;
-`;
-
 export const Button = styled.button.attrs((props) => ({
   type: props.type,
 }))`
@@ -49,7 +23,6 @@ export const Button = styled.button.attrs((props) => ({
     background-color: #0080c1;
   }
 `;
-
 export const Article = styled.div`
   max-width: 1178px;
   width: 100%;

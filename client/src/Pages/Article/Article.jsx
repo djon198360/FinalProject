@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useGetPostIdQuery } from "../../Services/ApiPost";
+import { RenderHeadBack } from "../../Components/HeadBack/Back";
 import { formateDate, hidePhone } from "../../assets/helpFunc";
 import { SERVER_URL, NoImage } from "../../Consts/Consts";
 import * as S from "./Style";
 
 export const Article = () => {
-  /*   const isAuth = true; */
   const history = useNavigate();
+  const isAuth = true;
+  const idUser = localStorage.getItem("id");
   const [hide, setHide] = useState(true);
   const { id: ids } = useParams();
 
@@ -32,21 +34,7 @@ export const Article = () => {
   return (
     <S.Main>
       <S.Container>
-        <S.Menu>
-          <Link to="/">
-            <S.MenuImg src="/img/logo.png" alt="" />
-          </Link>
-          <S.Form>
-            <S.Button
-              type="button"
-              onClick={() => {
-                history("/");
-              }}
-            >
-              Вернуться на главную
-            </S.Button>
-          </S.Form>
-        </S.Menu>
+        <RenderHeadBack />
       </S.Container>
       <S.Article>
         <S.ArticleContent id={data?.id || null}>
@@ -99,7 +87,15 @@ export const Article = () => {
                   />
                 </S.AuthorImg>
                 <S.AuthorCont>
-                  <S.AuthorName>{data?.user.name}</S.AuthorName>
+                  <S.AuthorName
+                    onClick={() =>
+                      isAuth && idUser === data?.user.id
+                        ? history("/profile/")
+                        : history(`/profile/${data?.user.id}`)
+                    }
+                  >
+                    {data?.user.name}
+                  </S.AuthorName>
                   {isLoading ? (
                     <S.AuthorAbout></S.AuthorAbout>
                   ) : (
