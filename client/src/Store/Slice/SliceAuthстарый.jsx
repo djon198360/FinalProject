@@ -5,6 +5,7 @@ const initialState = {
   accessToken: localStorage.getItem("access_token"),
   refreshToken: localStorage.getItem("refresh_token"),
   isAuth: !!localStorage.getItem("access_token"),
+  currentUser: null,
 };
 
 export const postsSlice = createSlice({
@@ -14,8 +15,11 @@ export const postsSlice = createSlice({
     setToken(state, action) {
       state.accessToken = action.payload;
     },
+    setCurrentUser(state, action) {
+      state.currentUser = action.payload;
+    },
   },
 });
 
-export const { setToken } = postsSlice.actions;
+export const { setToken, setCurrentUser } = postsSlice.actions;
 export default postsSlice.reducer;

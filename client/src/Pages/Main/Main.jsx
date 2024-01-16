@@ -12,8 +12,21 @@ export const Main = () => {
   const { data, error, isLoading } = useGetAllPostsQuery({
     // pollingInterval: 3000,
     // keepUnusedDataFor: 120,
-    refetchOnReconnect: true,
+    // refetchOnReconnect: true,
   });
+
+  /*  const PostById = () => {
+    // Will select the post with the given id, and will only rerender if the given post's data changes
+    const { post } = useGetAllPostsQuery(undefined, {
+      selectFromResult: ({ datas }) => ({
+        post: datas,
+      }),
+    });
+
+    console.log(post);
+  };
+
+  PostById(); */
 
   const isEmptyList = !isLoading && !data?.length;
   if (error) {
@@ -54,7 +67,11 @@ export const Main = () => {
           <S.MainH2>Объявления</S.MainH2>
           <S.MainContent>
             <S.CardsBlock>
-              {errorMessage ? "Error" : null}
+              {errorMessage
+                ? `Не удалось загрузить объявления, попробуйте позже:
+        ${JSON.stringify(error.data, null, 2)}
+      `
+                : null}
               {isLoading
                 ? "Идет загрузка.."
                 : allFilterPosts.map((post) => (

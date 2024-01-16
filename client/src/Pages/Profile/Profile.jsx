@@ -1,42 +1,44 @@
 import { useState, useEffect } from "react";
 import { RenderHeadBack } from "../../Components/HeadBack/Back";
 import { NoImage, SERVER_URL } from "../../Consts/Consts";
+import { useGetUserQuery, useUpdateUserMutation } from "../../Services/ApiUser";
 import {
   refreshToken,
-  useUserGetQuery,
   useGetAllMyPostQuery,
-  useSetEditMyInfoMutation,
+  /*   useSetEditMyInfoMutation, */
+  /*   useGetRefreshTokenMutation, */
 } from "../../Services/ApiPost";
 import { RenderCardItem } from "../../Components/Cards/CardsItem";
 import * as S from "./Style";
 
 export const Profile = () => {
   let userInfoData = "";
-  const { data, isLoading, error, refetch: refetchUser } = useUserGetQuery();
-  if (error && error.status === 401) {
-    // refreshToken(() => refetchUser());
-    refetchUser();
+  const { data, error /* , refetch: getUser */ } = useGetUserQuery();
+  if (error) {
+    /*  getUser(); */
   }
-  const [userInfo, setUserInfo] = useState({
+
+  const [userInfo, setUserInfo] =
+    useState(/* {
     avatar: data?.avatar || NoImage,
     name: data?.name || "NoName",
     surname: data?.surname || "Неизвестна",
     city: data?.city || "Неизвестен",
     phone: data?.phone || "",
-  });
+  } */);
   const {
     data: dataPost,
     isLoading: isLoadingPost,
     error: errorPost,
-    refetch: refetchUserPost,
+    /* refetch: refetchUserPost, */
   } = useGetAllMyPostQuery();
 
   if (errorPost) {
     //  refreshToken(() => refetchUserPost);
-    refetchUserPost();
+    /*  refetchUserPost(); */
   }
 
-  const [editInfo, { isLoadings, errors }] = useSetEditMyInfoMutation();
+  const [editInfo, { isLoadings, errors }] = useUpdateUserMutation();
   const UpdateInputValue = (e) => {
     setUserInfo({
       ...userInfo,
@@ -59,12 +61,12 @@ export const Profile = () => {
     const result = await editInfo(userInfo);
     return result;
   };
-  if (data) {
-    userInfoData = data;
-  }
 
-  useEffect(() => {}, [isLoading]);
+  useEffect(() => {
+    setUserInfo(data);
+  }, [data]);
 
+  userInfoData = userInfo;
   return (
     <S.Main>
       <S.Container>
@@ -81,7 +83,7 @@ export const Profile = () => {
                   <S.Avatar>
                     <S.AvatarImg
                       src={
-                        userInfo
+                        userInfo && userInfo.avatar
                           ? SERVER_URL + userInfo.avatar
                           : SERVER_URL + NoImage
                       }

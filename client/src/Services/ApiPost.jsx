@@ -1,34 +1,47 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+/* import { useDispatch } from "react-redux"; */
 import { SERVER_URL } from "../Consts/Consts";
 import { createQuery } from "../assets/helpFunc";
-/* import { setToken } from "../Store/Slice/SliceAuth"; */
 
 const DATA_TAG = { type: "POST", id: "LIST" };
+/* const tokenss = {
+  refresh_token: localStorage.getItem("refresh_token"),
+  access_token: localStorage.getItem("access_token"),
+}; */
 
 export const refreshToken = async (functionCallback) => {
   const tokens = {
     refresh_token: localStorage.getItem("refresh_token"),
     access_token: localStorage.getItem("access_token"),
   };
-  const token = await fetch(`${SERVER_URL}auth/login/`, {
+
+  const response = await fetch(`${SERVER_URL}auth/login/`, {
     method: "PUT",
     headers: {
       "content-type": "application/json",
     },
     body: JSON.stringify(tokens),
   });
-  const data = await token.json();
-  if (!token.ok) {
-    throw data.error;
+  const data = await response.json();
+  if (!response.ok) {
+    return response;
+    /*   throw new Error({
+      error: `Не удалось загрузить плейлист, попробуйте позже!`,
+    }); */
   }
-  if (token.ok) {
+  if (response.ok) {
     localStorage.setItem("access_token", data.access_token);
     localStorage.setItem("refresh_token", data.refresh_token);
     if (functionCallback) {
       functionCallback();
     }
+    return data;
   }
-  return token;
+  return data;
+};
+const tokens = {
+  refresh_token: localStorage.getItem("refresh_token"),
+  access_token: localStorage.getItem("access_token"),
 };
 
 export const AllPosts = createApi({
@@ -36,6 +49,7 @@ export const AllPosts = createApi({
   /*  tagTypes: ["POST", "AUTH"], */
   baseQuery: fetchBaseQuery({
     baseUrl: SERVER_URL,
+    maxRetries: 5,
     prepareHeaders: (headers) => {
       const token = localStorage?.getItem("access_token");
       if (token) {
@@ -44,8 +58,34 @@ export const AllPosts = createApi({
       }
     },
   }),
-
   endpoints: (builder) => ({
+    getRefreshToken: builder.mutation({
+      query: () => ({
+        url: `${SERVER_URL}auth/login/`,
+        method: "PUT",
+        body: JSON.stringify({ tokens }),
+        headers: { "content-type": "application/json" },
+        extraOptions: { maxRetries: 2 },
+      }),
+
+      /*     query: async () => {
+        const tokens = {
+          refresh_token: localStorage.getItem("refresh_token"),
+          access_token: localStorage.getItem("access_token"),
+        };
+        return {
+          url: `auth/login/`,
+          method: "PUT",
+          body: JSON.stringify(tokens),
+          headers: { "content-type": "application/json" },
+        };
+      }, */
+      /*       providesTags: (result = []) => [
+        ...result.map((id) => ({ type: "POST", id })),
+        DATA_TAG,
+      ], */
+    }),
+
     getAllPosts: builder.query({
       query: (query) => {
         const querySearch = createQuery(query);
@@ -66,12 +106,26 @@ export const AllPosts = createApi({
       providesTags: (id) => [{ type: "POST", id }],
     }),
 
+    editPostId: builder.mutation({
+      query: (formData, id) => {
+        //  const { id } = query;
+        return {
+          url: `/ads/${id}`,
+          method: "PATCH",
+          // header: { "content-type": "multipart/form-data" },
+          headers: { "content-type": "application/json" },
+          body: { formData }, // { title, price, description },
+        };
+      },
+      invalidatesTags: (id) => [{ type: "POST", id }],
+    }),
+
     getAllMyPost: builder.query({
       query: () => `ads/me`,
       providesTags: (id) => [{ type: "POST", id }],
     }),
 
-    setEditMyInfo: builder.mutation({
+    /*     setEditMyInfo: builder.mutation({
       query(data) {
         const { name, city, surname, role, phone } = data;
         return {
@@ -80,8 +134,9 @@ export const AllPosts = createApi({
           body: { name, city, surname, role, phone },
         };
       },
-      invalidatesTags: ["USER"],
-    }),
+      invalidatesTags: ["CURRENT_USER"],
+    }), */
+
     userRegister: builder.mutation({
       query(data) {
         const { email, password, name, city, surname, role } = data;
@@ -101,12 +156,7 @@ export const AllPosts = createApi({
           url: `user/all/?${querySearch}`,
         };
       },
-      /* transformResponse: (response) => {
-        Object.entries(response).map(([key, value]) =>
-          localStorage.setItem(key, value)
-        ); 
-      }, */
-      providesTags: ["AUTH"],
+      //  providesTags: ["USER"],
     }),
 
     userGet: builder.query({
@@ -115,49 +165,20 @@ export const AllPosts = createApi({
           url: `user/`,
         };
       },
-      providesTags: ["USER"],
-    }),
-
-    userLogin: builder.mutation({
-      query(data) {
-        const { email, password } = data;
-        return {
-          url: `/auth/login/`,
-          method: "POST",
-          body: { email, password },
-        };
-      },
-      transformResponse: async (response) => {
-        response.isAuth = true;
-        const info = await fetch(`${SERVER_URL}user/`, {
-          method: "GET",
-          headers: {
-            "content-type": "application/json",
-            Authorization: `Bearer ${response.access_token}`,
-          },
-        });
-        const infos = await info.json();
-        Object.entries(infos).map(([key, value]) =>
-          localStorage.setItem(key, value)
-        );
-        Object.entries(response).map(([key, value]) =>
-          localStorage.setItem(key, value)
-        );
-
-        return response;
-      },
-      invalidatesTags: ["USER"],
+      //  providesTags: ["USER"],
     }),
   }),
 });
 
 export const {
+  useEditPostIdMutation,
+  useGetRefreshTokenMutation,
   useGetAllPostsQuery,
   useGetPostIdQuery,
   useGetAllMyPostQuery,
   useUserGetAllQuery,
   useUserGetQuery,
   useUserRegisterMutation,
-  useUserLoginMutation,
-  useSetEditMyInfoMutation,
+  /*  useUserLoginMutation, */
+  /*   useSetEditMyInfoMutation, */
 } = AllPosts;

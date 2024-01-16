@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { validInput } from "../assets/helpFunc";
 import { lang } from "../assets/Language";
-import {
-  useUserRegisterMutation,
-  useUserLoginMutation,
-} from "../Services/ApiPost";
+import { setCurrentUser } from "../Services/Slice/SliceAuth";
+import { useUserLoginMutation } from "../Services/ApiUser";
+import { useUserRegisterMutation } from "../Services/ApiPost";
 import * as S from "./Style";
 
 export const ModalAuth = ({ isVisible = false, onClose }) => {
+  const dispatch = useDispatch();
   const [registerApi, isLoadings] = useUserRegisterMutation();
   const [loginUserApi, { isLoading, isError }] = useUserLoginMutation();
+
   const [isLogin, setLogin] = useState(true);
   const [isRegister, setRegister] = useState(false);
   const [loginValue, setLoginValue] = useState({
@@ -18,7 +20,6 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
     passwordRepeat: "",
     role: "user",
   });
-
   const [errorMessage, setErrorMessage] = useState(null);
   const handleLogin = async () => {
     const result = await loginUserApi({
@@ -33,7 +34,9 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
         setErrorMessage(result.error.data);
       }
     }
+
     if (result) {
+      dispatch(setCurrentUser(result));
       onClose();
     }
   };

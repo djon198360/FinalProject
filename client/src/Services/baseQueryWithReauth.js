@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable dot-notation */
 import { fetchBaseQuery } from "@reduxjs/toolkit/query";
-import { setAuthToken } from "./Slice/SliceAuth";
+import { setAuthToken, logout } from "./Slice/SliceAuth";
 import { SERVER_URL } from "../Consts/Consts";
 
 const baseQuery = fetchBaseQuery({
@@ -53,14 +53,16 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       }
       if (args.headers) {
         args.headers.set("Authorization", `Bearer ${data.access_token}`);
-        args.headers.set("Content-Type", "application/json");
+        /* args.headers.set("Content-Type", "application/json"); */
       } else {
-        args.headers["Authorization"] = `Bearer ${data.access_token}`;
+        args.headers.set("Authorization", `Bearer ${data.access_token}`);
+        /*  args.headers["Authorization"] = `Bearer ${data.access_token}`; */
       }
 
       result = await baseQuery(args, api, extraOptions);
+    } else {
+      api.dispatch(logout());
     }
-    else {api.dispatch(logout());}
   }
   return result;
 };

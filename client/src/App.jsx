@@ -1,4 +1,5 @@
 import { StrictMode } from "react";
+import "react-loading-skeleton/dist/skeleton.css";
 import AppRoutes from "./Route/Routes";
 import { RenderHeader } from "./Components/Header/Header";
 import * as S from "./Style";
