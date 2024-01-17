@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { device } from "../../Consts/ConstMediaScreen";
 
 export const Search = styled.div`
   width: 100%;
@@ -9,9 +10,25 @@ export const Search = styled.div`
   max-width: 1178px;
   margin: 0 auto;
   padding: 31px 10px 0px;
+  @media ${device.tablet} {
+    width: 100%;
+    height: 55px;
+    background-color: #009ee4;
+    box-shadow: 0px 4px 25px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0px;
+    padding: 11px 17px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 3;
+  }
 `;
 
-export const SearchLogoLink = styled.a``;
+export const SearchLogoLink = styled.a`
+  @media ${device.tablet} {
+    display: none;
+  }
+`;
 
 export const SearchLogoImg = styled.img.attrs((props) => ({
   src: props.src,
@@ -20,7 +37,14 @@ export const SearchLogoImg = styled.img.attrs((props) => ({
   height: auto;
 `;
 
-export const SearchLogoLinkMob = styled.a``;
+export const SearchLogoLinkMob = styled.a`
+  display: none;
+  @media ${device.tablet} {
+    display: block;
+    width: 32px;
+    height: 32px;
+  }
+`;
 
 export const SearchLogoImgMob = styled.img.attrs((props) => ({
   src: props.src,
@@ -37,12 +61,12 @@ export const SearchForm = styled.form`
   max-width: 1044px;
   width: 100%;
   display: flex;
-`;
-export const SearchFormMob = styled.form`
-  margin-left: 10px;
-  max-width: 1044px;
-  width: 100%;
-  display: flex;
+  @media ${device.tablet} {
+    margin-left: 10px;
+    max-width: 1044px;
+    width: 100%;
+    display: flex;
+  }
 `;
 
 export const Input = styled.input.attrs((props) => ({
@@ -61,7 +85,6 @@ export const Input = styled.input.attrs((props) => ({
   font-size: 16px;
   line-height: 24px;
   color: #000000;
-  outline: none;
   &::placeholder {
     background-color: transparent;
     color: rgba(0, 0, 0, 0.3);
@@ -70,32 +93,27 @@ export const Input = styled.input.attrs((props) => ({
     font-size: 16px;
     line-height: 24px;
   }
-
-  /* 
-  width: ${(props) => props.width ?? "20%"};
-  margin-left: 10px;
-  height: ${(props) => props.height ?? "50px"}; // 50px;
-  padding: 13px 19px;
-  background-color: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 6px;
-  font-size: 16px;
-  line-height: 24px;
-  color: #000; */
+  @media ${device.tablet} {
+    display: none;
+  }
 `;
+
 export const InputMob = styled.input.attrs((props) => ({
   type: props.type,
 }))`
-  display: inline-block;
-  width: 100%;
-  height: 32px;
-  border: none;
-  border-radius: 30px;
-  background-color: #ffffff;
-  padding: 5px 17px;
-  font-size: 14px;
-  line-height: 21px;
-  color: #000000;
+  display: none;
+  @media ${device.tablet} {
+    display: inline-block;
+    width: 100%;
+    height: 32px;
+    border: none;
+    border-radius: 30px;
+    background-color: #ffffff;
+    padding: 5px 17px;
+    font-size: 14px;
+    line-height: 21px;
+    color: #000000;
+  }
   &::placeholder {
     background-color: transparent;
     color: #b3b3b3;
@@ -118,4 +136,7 @@ export const SearchButton = styled.button.attrs((props) => ({
   font-size: 16px;
   line-height: 24px;
   color: #ffffff;
+  @media ${device.tablet} {
+    display: none;
+  }
 `;

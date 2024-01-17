@@ -1,7 +1,11 @@
 import styled from "styled-components";
+import { device } from "../../Consts/ConstMediaScreen";
 
 export const Header = styled.header`
   background-color: #009ee4;
+  @media ${device.tablet} {
+    display: none;
+  }
 `;
 
 export const Nav = styled.nav`

@@ -58,7 +58,7 @@ export const apiUser = createApi({
         return {
           url: `/ads/${id}`,
           method: "PATCH",
-          header: { "content-type": "multipart/form-data" },
+          // header: { "content-type": "multipart/form-data" },
           /*  headers: { "content-type": "application/json" }, */
           body: dataFiles, // { title, price, description },
         };
