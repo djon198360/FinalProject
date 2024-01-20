@@ -1,10 +1,7 @@
 import { useState /* , useEffect */ } from "react";
 import { useParams } from "react-router-dom";
-import {
-  useGetAllPostsQuery,
-  useUserGetAllQuery,
-  refreshToken,
-} from "../../Services/ApiPost";
+import { useGetAllPostsQuery } from "../../Services/ApiPost";
+import { useUserGetAllQuery } from "../../Services/ApiUser";
 import { NoImage, SERVER_URL } from "../../Consts/Consts";
 import { RenderHeadBack } from "../../Components/HeadBack/Back";
 import { RenderCardItem } from "../../Components/Cards/CardsItem";
@@ -36,7 +33,7 @@ export const SellerProfile = () => {
     id: ids,
   });
   if (error && error.status === 401) {
-    refreshToken(() => refetchUser());
+    refetchUser();
   }
 
   if (data) {

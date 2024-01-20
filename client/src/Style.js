@@ -18,7 +18,7 @@ export const Container = styled.div`
   @media ${device.tablet} {
     width: 100%;
     min-width: 320px;
-    min-height: 100vh;
-    background-color: #ffffff;
+    /*     min-height: 100vh;
+    background-color: #ffffff; */
   }
 `;

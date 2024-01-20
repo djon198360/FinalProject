@@ -4,9 +4,20 @@ import { baseQueryWithReauth } from "./baseQueryWithReauth";
 import { createQuery } from "../assets/helpFunc";
 
 export const apiUser = createApi({
-  reducerPath: "api",
+  reducerPath: "apiUser",
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
+    userRegister: builder.mutation({
+      query(data) {
+        const { email, password, name, city, surname, role } = data;
+        return {
+          url: `/auth/register/`,
+          method: "POST",
+          body: { email, password, name, city, surname, role },
+        };
+      },
+      invalidatesTags: ["AUTH"],
+    }),
     userLogin: builder.mutation({
       query(data) {
         const { email, password } = data;
@@ -51,20 +62,18 @@ export const apiUser = createApi({
       query: (arg) => `posts/${arg}`,
       providesTags: (result, error, arg) => [{ type: "Posts", id: arg }],
     }),
-    editPostId: builder.mutation({
+    /*  editPostId: builder.mutation({
       query: ({ dataFiles, id }) => {
-        console.log(dataFiles);
-        /* const { title, price, description } = formData; */
+         const { title, price, description } = formData; 
         return {
           url: `/ads/${id}`,
           method: "PATCH",
-          // header: { "content-type": "multipart/form-data" },
-          /*  headers: { "content-type": "application/json" }, */
-          body: dataFiles, // { title, price, description },
+
+          body: dataFiles,  { title, price, description },
         };
       },
       invalidatesTags: (id) => [{ type: "POST", id }],
-    }),
+    }), */
     updateUser: builder.mutation({
       query: ({ name, city, surname, role, phone }) => ({
         url: `user/`,
@@ -85,12 +94,32 @@ export const apiUser = createApi({
         }
       },
     }),
+    uploadAvatar: builder.mutation({
+      query: (datas) => {
+        return {
+          url: `/user/avatar`,
+          method: "POST",
+          body: datas,
+        };
+      },
+      invalidatesTags: () => [{ type: "Users" }],
+    }),
+    userGetAll: builder.query({
+      query(query) {
+        const querySearch = createQuery(query);
+        return {
+          url: `user/all/?${querySearch}`,
+        };
+      },
+      //  providesTags: ["USER"],
+    }),
   }),
 });
 
 export const {
-  useEditPostIdMutation,
-  useGetUsersAllQuery,
+  useUserRegisterMutation,
+  useUploadAvatarMutation,
+  useUserGetAllQuery,
   useGetUserQuery,
   useGetPostsQuery,
   useUpdateUserMutation,

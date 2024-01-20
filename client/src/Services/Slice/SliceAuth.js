@@ -39,13 +39,21 @@ const SliceAuth = createSlice({
       );
     },
 
-    logout: (state = null) => {
+    setAuthReload: (state, action) => {
+      Object.entries(action.payload).map(
+        ([key, value]) => (state[key] = `${value}`)
+      );
+    },
+
+    logout: (state, action) => {
       localStorage.clear();
+      state.isAuth = action.payload;
       /* state = null; */
       return state;
     },
   },
 });
 
-export const { setAuthToken, setCurrentUser, logout } = SliceAuth.actions;
+export const { setAuthToken, setCurrentUser, setAuthReload, logout } =
+  SliceAuth.actions;
 export default SliceAuth.reducer;

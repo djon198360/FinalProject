@@ -3,8 +3,10 @@ import { useDispatch } from "react-redux";
 import { validInput } from "../assets/helpFunc";
 import { lang } from "../assets/Language";
 import { setCurrentUser } from "../Services/Slice/SliceAuth";
-import { useUserLoginMutation } from "../Services/ApiUser";
-import { useUserRegisterMutation } from "../Services/ApiPost";
+import {
+  useUserLoginMutation,
+  useUserRegisterMutation,
+} from "../Services/ApiUser";
 import * as S from "./Style";
 
 export const ModalAuth = ({ isVisible = false, onClose }) => {

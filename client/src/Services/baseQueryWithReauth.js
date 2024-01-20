@@ -18,7 +18,6 @@ const baseQuery = fetchBaseQuery({
 export const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
   if (result.error && result.error.status === 401) {
-    console.log("Делаю запрос за токенами");
     const token = {
       refresh_token: localStorage.getItem("refresh_token"),
       access_token: localStorage.getItem("access_token"),
@@ -32,13 +31,12 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
       api,
       extraOptions
     );
-
     if (refreshResult.data) {
-      const [data] = refreshResult.data;
+      const { data } = refreshResult;
       api.dispatch(
         setAuthToken({
-          accessToken: data.access_token,
-          refreshToken: data.refresh_token,
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
           isAuth: Boolean(data.access_token),
         })
       );
@@ -55,10 +53,9 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
         args.headers.set("Authorization", `Bearer ${data.access_token}`);
         /* args.headers.set("Content-Type", "application/json"); */
       } else {
-        args.headers.set("Authorization", `Bearer ${data.access_token}`);
-        /*  args.headers["Authorization"] = `Bearer ${data.access_token}`; */
+        /*  args.headers.set("Authorization", `Bearer ${data.access_token}`); */
+        args.headers["Authorization"] = `Bearer ${data.access_token}`;
       }
-
       result = await baseQuery(args, api, extraOptions);
     } else {
       api.dispatch(logout());

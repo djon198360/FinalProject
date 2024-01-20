@@ -101,11 +101,6 @@ export const AllPosts = createApi({
       ],
     }),
 
-    getPostId: builder.query({
-      query: (id) => `ads/${id}`,
-      providesTags: (id) => [{ type: "POST", id }],
-    }),
-
     editPostId: builder.mutation({
       query: (formData, id) => {
         //  const { id } = query;
@@ -120,11 +115,6 @@ export const AllPosts = createApi({
       invalidatesTags: (id) => [{ type: "POST", id }],
     }),
 
-    getAllMyPost: builder.query({
-      query: () => `ads/me`,
-      providesTags: (id) => [{ type: "POST", id }],
-    }),
-
     /*     setEditMyInfo: builder.mutation({
       query(data) {
         const { name, city, surname, role, phone } = data;
@@ -137,7 +127,7 @@ export const AllPosts = createApi({
       invalidatesTags: ["CURRENT_USER"],
     }), */
 
-    userRegister: builder.mutation({
+    /* userRegister: builder.mutation({
       query(data) {
         const { email, password, name, city, surname, role } = data;
         return {
@@ -147,17 +137,7 @@ export const AllPosts = createApi({
         };
       },
       invalidatesTags: ["AUTH"],
-    }),
-
-    userGetAll: builder.query({
-      query(query) {
-        const querySearch = createQuery(query);
-        return {
-          url: `user/all/?${querySearch}`,
-        };
-      },
-      //  providesTags: ["USER"],
-    }),
+    }), */
 
     userGet: builder.query({
       query() {
@@ -173,12 +153,8 @@ export const AllPosts = createApi({
 export const {
   useEditPostIdMutation,
   useGetRefreshTokenMutation,
-  useGetAllPostsQuery,
-  useGetPostIdQuery,
-  useGetAllMyPostQuery,
-  useUserGetAllQuery,
   useUserGetQuery,
-  useUserRegisterMutation,
+  /*   useUserRegisterMutation, */
   /*  useUserLoginMutation, */
   /*   useSetEditMyInfoMutation, */
 } = AllPosts;

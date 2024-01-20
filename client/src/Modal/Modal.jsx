@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Skeleton /* { SkeletonTheme } */ from "react-loading-skeleton";
 import { NoImage, SERVER_URL } from "../Consts/Consts";
-import { useEditPostIdMutation } from "../Services/ApiUser";
+import { useEditPostMutation } from "../Services/ApiPost";
 import * as S from "./ModalStyle";
 
 export const RenderModal = ({
@@ -10,6 +10,7 @@ export const RenderModal = ({
   onClose,
   content,
   loading,
+  action,
 }) => {
   const keydownHandler = ({ key }) => {
     switch (key) {
@@ -19,22 +20,38 @@ export const RenderModal = ({
       default:
     }
   };
-  const [editPost, { isLoading, error }] = useEditPostIdMutation();
+  const [editPost, { isLoading, error }] = useEditPostMutation();
   const [post, setPost] = useState();
+  const serializeForm = (formNode) => {
+    const { elements } = formNode.target;
+
+    const data = new FormData();
+
+    Array.from(elements)
+      .filter((item) => !!item.name)
+      .forEach((element) => {
+        const { name, type } = element;
+        const value = type === "checkbox" ? element.checked : element.value;
+        console.log(name, value);
+        data.append(name, value);
+      });
+
+    return data;
+    //  return new FormData(formNode);
+  };
 
   const setEditPost = async (e) => {
     e.preventDefault();
     const { id } = post;
-    console.log(id);
-    console.log(e);
-    const formData = new FormData(e.target);
-    console.log(
-      `Created FormData,  ${[...formData.keys()].length}  keys in data`
-    );
-    const { title, price, description } = post;
-    const dataFiles = { title, price, description };
+    const dat = serializeForm(e);
+    console.log(dat);
+    /*   const formData = new FormData(e.target); */
 
-    const result = await editPost({ dataFiles, id });
+    console.log(`Created FormData,  ${[...dat.keys()].length}  keys in data`);
+    /*     const { title, price, description } = post; */
+    /* const dataFiles = { title, price, description }; */
+
+    const result = await editPost({ dat, id });
     if (error) {
       console.log(error);
     }
@@ -48,10 +65,8 @@ export const RenderModal = ({
     const elem = e.target;
     setPost({ ...post, [elem.id]: elem.value });
   };
-  console.log(post);
   useEffect(() => {
     setPost(content);
-    console.log(content);
   }, [content]);
   useEffect(() => {
     document.addEventListener("keydown", keydownHandler);
@@ -63,7 +78,9 @@ export const RenderModal = ({
       <S.ContainerBg>
         <S.ModalBlock>
           <S.ModalContent>
-            <S.ModalTitle>Редактировать объявление</S.ModalTitle>
+            <S.ModalTitle>
+              {action ? "Добавить объявление " : "Редактировать объявление"}
+            </S.ModalTitle>
             <S.ModalClose>
               <S.ModalCloseLine onClick={onClose}></S.ModalCloseLine>
             </S.ModalClose>
@@ -73,11 +90,11 @@ export const RenderModal = ({
               }}
             >
               <S.ModalFormBlock>
-                <S.FormLabel for="name">
-                  {loading ? <Skeleton height="100%" /> : "Название"}
+                <S.FormLabel htmlFor="name">
+                  {loading && !action ? <Skeleton height="100%" /> : "Название"}
                 </S.FormLabel>
 
-                {loading || !content?.title ? (
+                {loading || (!content?.title && !action) ? (
                   <Skeleton height="100%" width="100%" />
                 ) : (
                   <S.InputName
@@ -85,7 +102,7 @@ export const RenderModal = ({
                     type="text"
                     name="title"
                     placeholder="Введите название"
-                    value={post?.title ? post.title : null}
+                    value={post?.title ? post.title : ""}
                     onChange={(e) => {
                       update(e);
                     }}
@@ -93,10 +110,10 @@ export const RenderModal = ({
                 )}
               </S.ModalFormBlock>
               <S.ModalFormBlock>
-                <S.FormLabel for="text">
-                  {loading ? <Skeleton height="100%" /> : "Описание"}
+                <S.FormLabel htmlFor="text">
+                  {loading && !action ? <Skeleton height="100%" /> : "Описание"}
                 </S.FormLabel>
-                {loading ? (
+                {loading && !action ? (
                   <Skeleton height="100%" width="100%" />
                 ) : (
                   <S.TextArea
@@ -105,7 +122,7 @@ export const RenderModal = ({
                     cols="auto"
                     rows="10"
                     placeholder="Введите описание"
-                    value={post?.description ? post.description : null}
+                    value={post?.description ? post.description : ""}
                     onChange={(e) => {
                       update(e);
                     }}
@@ -114,9 +131,13 @@ export const RenderModal = ({
               </S.ModalFormBlock>
               <S.ModalFormBlock>
                 <S.FormP>
-                  {loading ? <Skeleton height="100%" /> : "Фотографии товара"}
+                  {loading && !action ? (
+                    <Skeleton height="100%" />
+                  ) : (
+                    "Фотографии товара"
+                  )}
                   <S.FormPSpan>
-                    {loading ? (
+                    {loading && !action ? (
                       <Skeleton height="100%" />
                     ) : (
                       " не более 5 фотографий"
@@ -124,14 +145,14 @@ export const RenderModal = ({
                   </S.FormPSpan>
                 </S.FormP>
                 <S.FormBarImg>
-                  {loading || !content ? (
+                  {loading || (!content && !action) ? (
                     <S.BarImg>
                       <Skeleton height="100%" width="100%" />
                     </S.BarImg>
                   ) : (
                     content?.images.map(({ url, id }) => (
                       <S.BarImg key={id}>
-                        {loading ? (
+                        {loading && !action ? (
                           <Skeleton height="100%" width="100%" />
                         ) : (
                           <S.BarImgImg
@@ -147,14 +168,14 @@ export const RenderModal = ({
                   {[...Array(5 - (content?.images.length || 0))].map(
                     (_, index) => (
                       <S.BarImg key={index}>
-                        {loading ? (
+                        {/*            {loading ? (
                           <Skeleton height="100%" width="100%" />
                         ) : (
                           <S.BarImgImg
                             src={`${SERVER_URL}${NoImage}`}
                             key={index}
                           />
-                        )}
+                        )} */}
                         <S.ImgCover></S.ImgCover>
                       </S.BarImg>
                     )
@@ -162,16 +183,16 @@ export const RenderModal = ({
                 </S.FormBarImg>
               </S.ModalFormBlock>
               <S.ModalFormBlockPrice>
-                <S.FormLabel for="price">
-                  {loading ? <Skeleton height="100%" /> : "Цена"}
+                <S.FormLabel htmlFor="price">
+                  {loading && !action ? <Skeleton height="100%" /> : "Цена"}
                 </S.FormLabel>
                 <S.InputNamePrice
                   id="price"
                   type="number"
                   name="price"
-                  min-length="1"
+                  $min-length="1"
                   placeholder="Введите цену &nbsp; "
-                  value={post?.price ? post.price : null}
+                  value={post?.price ? post.price : ""}
                   onChange={(e) => {
                     update(e);
                   }}
