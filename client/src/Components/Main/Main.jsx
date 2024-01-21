@@ -1,8 +1,13 @@
+/* eslint-disable react/jsx-no-useless-fragment */
 import { useState } from "react";
 import Skeleton /* { SkeletonTheme } */ from "react-loading-skeleton";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useDeletePostMutation } from "../../Services/ApiPost";
 import { device } from "../../Consts/ConstMediaScreen";
-import { RenderModal } from "../../Modal/Modal";
 import { NoImage, SERVER_URL } from "../../Consts/Consts";
+import { RenderModal } from "../../Modal/Modal";
+import { ModalComment } from "../../Modal/Comment";
 import {
   formatDateMonth,
   formatDateWeek,
@@ -11,15 +16,26 @@ import {
 import * as S from "./Style";
 
 export const RenderMain = ({ headerBack, content, loading, error }) => {
+  const history = useNavigate();
+  const [deletePost, { data }] = useDeletePostMutation();
+  const userInfoData = useSelector((state) => state.SliceAuth);
+  const { id, isAuth } = userInfoData;
   const [isModal, setModal] = useState(false);
-  const [hide /* , setHide */] = useState(true);
-  /*   const handleHideShowPhone = () => {
+  const [isVisibleComment, setIsVisibleComment] = useState(false);
+  const [hide, setHide] = useState(true);
+  const handleHideShowPhone = () => {
     if (hide) {
       setHide(false);
     } else {
       setHide(true);
     }
-  }; */
+  };
+  const delPost = () => {
+    const result = deletePost(content.id);
+    console.log(data);
+    console.log(result);
+  };
+
   const [width] = useState(window.innerWidth);
   return (
     <>
@@ -30,6 +46,11 @@ export const RenderMain = ({ headerBack, content, loading, error }) => {
         loading={loading}
         error={error}
       ></RenderModal>
+      <RenderModalComment
+        isVisible={isVisibleComment}
+        onClose={() => setIsVisibleComment(false)}
+        loading={loading}
+      ></RenderModalComment>
       <S.Main>
         <S.MainContainer>
           {headerBack}
@@ -58,6 +79,7 @@ export const RenderMain = ({ headerBack, content, loading, error }) => {
                           <Skeleton circle />
                         ) : (
                           <S.ArticleImgBarDivImg
+                            key={content?.images[0].id}
                             src={
                               content?.images[0]
                                 ? `${SERVER_URL}${content.images[0].url}`
@@ -75,14 +97,18 @@ export const RenderMain = ({ headerBack, content, loading, error }) => {
                           <Skeleton height="100%" width="100%" />
                         </S.ArticleImgBarDiv>
                       ) : (
-                        content.images.map(({ url, id }) => (
-                          <S.ArticleImgBarDiv key={id}>
+                        content.images.map(({ url, index }) => (
+                          <S.ArticleImgBarDiv key={index}>
                             {loading ? (
-                              <Skeleton height="100%" width="100%" />
+                              <Skeleton
+                                key={index}
+                                height="100%"
+                                width="100%"
+                              />
                             ) : (
                               <S.ArticleImgBarDivImg
                                 src={`${SERVER_URL}${url}`}
-                                key={id}
+                                key={index}
                               />
                             )}
                           </S.ArticleImgBarDiv>
@@ -108,30 +134,51 @@ export const RenderMain = ({ headerBack, content, loading, error }) => {
                     <S.ArticleCity>
                       {loading || !content ? <Skeleton /> : content.user.city}
                     </S.ArticleCity>
-                    <S.ArticleLink>Comment</S.ArticleLink>
+                    <S.ArticleLink onClick={() => setIsVisibleComment(true)}>
+                      Comment
+                    </S.ArticleLink>
                   </S.ArticleInfo>
                   <S.ArticlePrice>
                     {loading || !content ? (
-                      <Skeleton />
+                      <Skeleton height="100%" width="100%" />
                     ) : (
-                      `${content.price.toLocaleString("ru-RU")}
-                   ₽`
+                      `${content.price.toLocaleString("ru-RU")} ₽`
                     )}
                   </S.ArticlePrice>
                   <S.ArticleBtnBlock>
-                    {
-                      hide && content?.user.id === "3"
-                        ? hidePhone(content?.user.phone)
-                        : null /* content?.user.phone */
-                    }
-                    <S.ButtonRedact
-                      onClick={() =>
-                        setModal(true)
-                      } /* onClick={() => handleHideShowPhone()} */
-                    >
-                      Редактировать
-                    </S.ButtonRedact>
-                    <S.ButtonRemove>Снять с публикации</S.ButtonRemove>
+                    {Number(content?.user.id) === Number(id) && (
+                      <>
+                        {loading ? (
+                          <Skeleton height="100%" width="100%" />
+                        ) : (
+                          <>
+                            <S.ButtonRedact onClick={() => setModal(true)}>
+                              Редактировать
+                            </S.ButtonRedact>
+                            <S.ButtonRemove onClick={() => delPost()}>
+                              Снять с публикации
+                            </S.ButtonRemove>
+                          </>
+                        )}
+                      </>
+                    )}
+
+                    {Number(content?.user.id) !== Number(id) && (
+                      <>
+                        {loading ? (
+                          <Skeleton height="100%" width="100%" />
+                        ) : (
+                          <S.ButtonRedact onClick={() => handleHideShowPhone()}>
+                            {hide ? "Показать телефон" : "Скрыть телефон"}
+                            <S.ArticleButtonSpan>
+                              {hide
+                                ? hidePhone(content?.user.phone)
+                                : content?.user.phone}
+                            </S.ArticleButtonSpan>
+                          </S.ButtonRedact>
+                        )}
+                      </>
+                    )}
                   </S.ArticleBtnBlock>
                   <S.ArticleAuthor>
                     <S.AuthorImgDiv>
@@ -149,11 +196,16 @@ export const RenderMain = ({ headerBack, content, loading, error }) => {
                       )}
                     </S.AuthorImgDiv>
                     <S.AuthorCont>
-                      <S.AuthorName>
+                      <S.AuthorName
+                        onClick={() =>
+                          isAuth && id === content?.user.id
+                            ? history("/profile/")
+                            : history(`/profile/${content?.user.id}`)
+                        }
+                      >
                         {loading || !content ? <Skeleton /> : content.user.name}
                       </S.AuthorName>
                       <S.AuthorAbout>
-                        Продает товары с
                         {loading || !content ? (
                           <Skeleton />
                         ) : (
