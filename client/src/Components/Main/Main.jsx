@@ -21,10 +21,8 @@ export const RenderMain = ({ headerBack, content, loading, error }) => {
     }
   }; */
   const [width] = useState(window.innerWidth);
-  console.log(content);
   return (
     <>
-      {" "}
       <RenderModal
         isVisible={isModal}
         onClose={() => setModal(false)}

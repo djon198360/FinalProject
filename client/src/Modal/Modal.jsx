@@ -2,7 +2,11 @@
 import { useEffect, useState } from "react";
 import Skeleton /* { SkeletonTheme } */ from "react-loading-skeleton";
 import { NoImage, SERVER_URL } from "../Consts/Consts";
-import { useEditPostMutation } from "../Services/ApiPost";
+import {
+  useEditPostMutation,
+  useCreatePostMutation,
+  useUploadImageMutation,
+} from "../Services/ApiPost";
 import * as S from "./ModalStyle";
 
 export const RenderModal = ({
@@ -21,10 +25,12 @@ export const RenderModal = ({
     }
   };
   const [editPost, { isLoading, error }] = useEditPostMutation();
+  const [createPost, { data: createData }] = useCreatePostMutation();
+  const [createImage, { data: imageData }] = useUploadImageMutation();
   const [post, setPost] = useState();
-  const serializeForm = (formNode) => {
+  const [image, setImage] = useState();
+  /*   const serializeForm = (formNode) => {
     const { elements } = formNode.target;
-
     const data = new FormData();
 
     Array.from(elements)
@@ -32,32 +38,47 @@ export const RenderModal = ({
       .forEach((element) => {
         const { name, type } = element;
         const value = type === "checkbox" ? element.checked : element.value;
-        console.log(name, value);
         data.append(name, value);
       });
-
+    console.log(data);
     return data;
     //  return new FormData(formNode);
+  }; */
+  if (createData) {
+    setPost();
+  }
+  const uploadImg = (e) => {
+    const id = 2;
+    const images = e.target.files[0];
+    const imageFormData = new FormData();
+    if (e.target.files[0]) {
+      imageFormData.append("file", e.target.files[0]);
+      createImage(images, id);
+      e.target.value = null;
+    }
+    if (imageData) {
+      setImage(imageData);
+
+      console.log("image add");
+    }
+    return <S.BarImgImg src={`${e.target.files[0]}`} />;
   };
 
   const setEditPost = async (e) => {
     e.preventDefault();
-    const { id } = post;
-    const dat = serializeForm(e);
-    console.log(dat);
-    /*   const formData = new FormData(e.target); */
-
-    console.log(`Created FormData,  ${[...dat.keys()].length}  keys in data`);
-    /*     const { title, price, description } = post; */
-    /* const dataFiles = { title, price, description }; */
-
-    const result = await editPost({ dat, id });
+    const result = await editPost({ post });
     if (error) {
       console.log(error);
     }
     if (isLoading) {
       console.log(isLoading);
     }
+    return result;
+  };
+
+  const setCreatePost = async (e) => {
+    e.preventDefault();
+    const result = await createPost(post);
     return result;
   };
 
@@ -85,9 +106,7 @@ export const RenderModal = ({
               <S.ModalCloseLine onClick={onClose}></S.ModalCloseLine>
             </S.ModalClose>
             <S.ModalForm
-              onSubmit={(e) => {
-                setEditPost(e);
-              }}
+              onSubmit={(e) => (action ? setCreatePost(e) : setEditPost(e))}
             >
               <S.ModalFormBlock>
                 <S.FormLabel htmlFor="name">
@@ -164,22 +183,43 @@ export const RenderModal = ({
                       </S.BarImg>
                     ))
                   )}
-
-                  {[...Array(5 - (content?.images.length || 0))].map(
+                  <S.BarImg>
+                    {image}
+                    <S.Label htmlFor="uploadImage">
+                      <S.ImgCover>
+                        <S.ButtonFile
+                          multiple
+                          accept="image/*"
+                          type="file"
+                          id="uploadImage"
+                          name="uploadImage"
+                          onChange={(e) => {
+                            uploadImg(e);
+                          }}
+                        />
+                      </S.ImgCover>
+                    </S.Label>
+                  </S.BarImg>
+                  {/*           {[...Array(5 - (content?.images.length || 0))].map(
                     (_, index) => (
                       <S.BarImg key={index}>
-                        {/*            {loading ? (
-                          <Skeleton height="100%" width="100%" />
-                        ) : (
-                          <S.BarImgImg
-                            src={`${SERVER_URL}${NoImage}`}
-                            key={index}
-                          />
-                        )} */}
-                        <S.ImgCover></S.ImgCover>
+                        {image}
+                        <S.Label htmlFor={index}>
+                          <S.ImgCover>
+                            <S.ButtonFile
+                              accept="image/*"
+                              type="file"
+                              id={index}
+                              name={index}
+                              onChange={(e) => {
+                                uploadImg(e);
+                              }}
+                            />
+                          </S.ImgCover>
+                        </S.Label>
                       </S.BarImg>
                     )
-                  )}
+                  )} */}
                 </S.FormBarImg>
               </S.ModalFormBlock>
               <S.ModalFormBlockPrice>

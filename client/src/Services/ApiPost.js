@@ -27,22 +27,56 @@ export const apiPost = createApi({
       providesTags: (id) => [{ type: "POST", id }],
     }),
     editPost: builder.mutation({
-      query: ({ dat, id }) => {
-        /* const { title, price, description } = formData; */
+      query: (post) => {
+        console.log(post);
+        const { title, description, price, id } = post;
+        /* const { title, price, des
+          console.log(cription } = formData; */
         return {
           url: `/ads/${id}`,
           method: "PATCH",
           /* header: { "content-type": "multipart/form-data" }, */
           /*  headers: { "content-type": "application/json" }, */
-          body: dat, // { title, price, description },
+          body: { title, price, description }, // { title, price, description },
         };
       },
       invalidatesTags: (id) => [{ type: "POST", id }],
+    }),
+    createPost: builder.mutation({
+      query: (post) => {
+        const { title, description, price } = post;
+        const data = new FormData();
+        data.append("title", title);
+        data.append("description", description);
+        data.append("price ", price);
+        const querySearch = createQuery(post);
+        return {
+          url: `/ads/?${querySearch}`,
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: () => [{ type: "POST" }],
+    }),
+
+    uploadImage: builder.mutation({
+      query: ({ images, id }) => {
+        console.log(images);
+        console.log(id);
+        return {
+          url: `/ads/${id}/image`,
+          method: "POST",
+          body: images,
+        };
+      },
+      invalidatesTags: () => [{ type: "Users" }],
     }),
   }),
 });
 
 export const {
+  useUploadImageMutation,
+  useCreatePostMutation,
   useEditPostMutation,
   useGetAllPostsQuery,
   useGetPostIdQuery,
