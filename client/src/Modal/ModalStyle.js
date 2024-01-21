@@ -364,7 +364,36 @@ export const ImgCover = styled.div`
     transform: rotate(90deg);
   }
 `;
-
+export const ImgCoverDelete = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  z-index: 1;
+  &::after,
+  &::before {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 2px;
+    border-radius: 2px;
+    background-color: #000;
+    top: 50%;
+    right: calc(50% - 15px);
+  }
+  &::before {
+    transform: rotate(-45deg);
+  }
+  &::after {
+    transform: rotate(45deg);
+  }
+  &:hover {
+    background-color: #d9d9d9;
+    opacity: 0.7;
+  }
+`;
 export const ModalFormBlockPrice = styled(ModalFormBlock)`
   position: relative;
 `;

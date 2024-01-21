@@ -70,7 +70,7 @@ export const CardsBlock = styled.div`
   grid-auto-rows: 441px;
   grid-gap: 40px 26px;
   justify-content: center;
-  overflow-y: auto;
+  /*  overflow-y: auto; */
   scrollbar-color: #ffffff #2e2e2e;
   scrollbar-width: thin;
   scrollbar-width: 0px;

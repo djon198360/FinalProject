@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { validInput } from "../assets/helpFunc";
 import { lang } from "../assets/Language";
 import { setCurrentUser } from "../Services/Slice/SliceAuth";
@@ -11,9 +12,9 @@ import * as S from "./Style";
 
 export const ModalAuth = ({ isVisible = false, onClose }) => {
   const dispatch = useDispatch();
-  const [registerApi, isLoadings] = useUserRegisterMutation();
+  const [registerApi, { isLoading: isLoadings }] = useUserRegisterMutation();
   const [loginUserApi, { isLoading, isError }] = useUserLoginMutation();
-
+  const navigate = useNavigate();
   const [isLogin, setLogin] = useState(true);
   const [isRegister, setRegister] = useState(false);
   const [loginValue, setLoginValue] = useState({
@@ -23,6 +24,15 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
     role: "user",
   });
   const [errorMessage, setErrorMessage] = useState(null);
+  const toggle = () => {
+    if (isLogin) {
+      setLogin(false);
+      setRegister(true);
+    } else {
+      setLogin(true);
+      setRegister(false);
+    }
+  };
   const handleLogin = async () => {
     const result = await loginUserApi({
       email: loginValue.email.text,
@@ -36,10 +46,10 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
         setErrorMessage(result.error.data);
       }
     }
-
     if (result) {
       dispatch(setCurrentUser(result));
       onClose();
+      navigate("/", { replace: true });
     }
   };
 
@@ -47,16 +57,26 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
     const result = await registerApi({
       email: loginValue.email.text,
       password: loginValue.password.text,
-      name: loginValue.name.text,
-      surname: loginValue.surname.text,
-      city: loginValue.city.text,
-      role: loginValue.role,
+      name: loginValue?.name?.text,
+      surname: loginValue?.surname?.text,
+      city: loginValue?.city?.text,
+      role: loginValue?.role,
     });
     if (result?.error) {
       if (result?.error.status === 401) {
         setErrorMessage(result.error.detail);
       }
+      if (result?.error.status === 400) {
+        setErrorMessage(result.error.data.message);
+      } else {
+        setErrorMessage(result.error.data.message);
+      }
     }
+    if (result?.data?.id) {
+      toggle();
+      /* navigate("/", { replace: true }); */
+    }
+    console.log(result);
   };
   const [isBlock, setisBlock] = useState(true);
   const keydownHandler = ({ key }) => {
@@ -87,15 +107,6 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
     return validateInputs(e);
   };
 
-  const toggle = () => {
-    if (isLogin) {
-      setLogin(false);
-      setRegister(true);
-    } else {
-      setLogin(true);
-      setRegister(false);
-    }
-  };
   useEffect(() => {
     document.addEventListener("keydown", keydownHandler);
     return () => document.removeEventListener("keydown", keydownHandler);

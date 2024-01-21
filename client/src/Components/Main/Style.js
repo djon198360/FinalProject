@@ -367,3 +367,9 @@ export const MainText = styled.p`
   line-height: 24px;
   color: #000000;
 `;
+
+export const ArticleButtonSpan = styled.span`
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+`;

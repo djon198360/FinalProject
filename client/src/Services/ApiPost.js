@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { createApi /* , fetchBaseQuery */ } from "@reduxjs/toolkit/query/react";
 /* import { SERVER_URL } from "../Consts/Consts"; */
 import { baseQueryWithReauth } from "./baseQueryWithReauth";
@@ -20,61 +21,71 @@ export const apiPost = createApi({
     }),
     getPostId: builder.query({
       query: (id) => `ads/${id}`,
-      /*   providesTags: (id) => [{ type: "POST", id }], */
+      providesTags: (id) => [{ type: "POST", id }],
     }),
     getAllMyPost: builder.query({
       query: () => `ads/me`,
       providesTags: (id) => [{ type: "POST", id }],
     }),
     editPost: builder.mutation({
-      query: (post) => {
-        console.log(post);
+      query: ({ post }) => {
         const { title, description, price, id } = post;
-        /* const { title, price, des
-          console.log(cription } = formData; */
         return {
           url: `/ads/${id}`,
           method: "PATCH",
-          /* header: { "content-type": "multipart/form-data" }, */
-          /*  headers: { "content-type": "application/json" }, */
-          body: { title, price, description }, // { title, price, description },
+          body: { title, price, description },
         };
       },
       invalidatesTags: (id) => [{ type: "POST", id }],
     }),
     createPost: builder.mutation({
-      query: (post) => {
+      query: ({ arrayImage, post }) => {
         const { title, description, price } = post;
-        const data = new FormData();
-        data.append("title", title);
-        data.append("description", description);
-        data.append("price ", price);
-        const querySearch = createQuery(post);
+        const formDataCreate = new FormData();
+        for (const file of arrayImage) {
+          formDataCreate.append("files", file);
+        }
+        formDataCreate.append("title", title);
+        formDataCreate.append("description", description);
+        formDataCreate.append("price", price);
+        const querySearch = createQuery({ title, description, price });
         return {
           url: `/ads/?${querySearch}`,
           method: "POST",
-          body: data,
+          body: formDataCreate,
         };
       },
       invalidatesTags: () => [{ type: "POST" }],
     }),
-
     uploadImage: builder.mutation({
-      query: ({ images, id }) => {
-        console.log(images);
-        console.log(id);
+      query: ({ arrayImage, post }) => {
+        const { id } = post;
+        const formDataCreate = new FormData();
+        for (const file of arrayImage) {
+          formDataCreate.append("file", file);
+        }
         return {
           url: `/ads/${id}/image`,
           method: "POST",
-          body: images,
+          body: formDataCreate,
         };
       },
       invalidatesTags: () => [{ type: "Users" }],
+    }),
+    deletePost: builder.mutation({
+      query: (id) => {
+        return {
+          url: `/ads/${id}`,
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: () => [{ type: "POST" }],
     }),
   }),
 });
 
 export const {
+  useDeletePostMutation,
   useUploadImageMutation,
   useCreatePostMutation,
   useEditPostMutation,

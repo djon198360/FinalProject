@@ -23,7 +23,6 @@ export const Profile = () => {
   // Загрузка аватарки
   const uploadAvatar = (e) => {
     const avatarData = new FormData();
-    // Добавляем файл
     if (e.target.files[0]) {
       avatarData.append("file", e.target.files[0]);
       upload(avatarData);
@@ -84,7 +83,7 @@ export const Profile = () => {
               {isLoading && !error ? (
                 <Skeleton />
               ) : (
-                `Здравствуйте, ${userInfoData?.name}!` ?? `Нет данных`
+                `Здравствуйте, ${userInfoData?.name || "NoName"}!`
               )}
             </S.TitleH2>
             <S.Profile>
@@ -129,7 +128,7 @@ export const Profile = () => {
                         <S.Label htmlFor="name">Имя</S.Label>
                         <S.Fname
                           type="text"
-                          value={userInfo ? userInfo.name : "Неуказано"}
+                          value={userInfo ? userInfo.name : ""}
                           onChange={(e) => {
                             UpdateInputValue(e);
                           }}
@@ -140,7 +139,7 @@ export const Profile = () => {
                         <S.Label htmlFor="surname">Фамилия</S.Label>
                         <S.Lname
                           type="text"
-                          value={userInfo ? userInfo.surname : "Неуказана"}
+                          value={userInfo ? userInfo.surname : ""}
                           onChange={(e) => {
                             UpdateInputValue(e);
                           }}

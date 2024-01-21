@@ -18,23 +18,13 @@ export const MyArticle = () => {
   useEffect(() => {
     setDatas(data);
   }, [data]);
-  console.log(data);
   return (
-    <>
-      {/*      <RenderModal
-        isVisible={isModal}
-        onClose={() => setModal(false)}
-        content={datas}
-        loading={isLoading}
-        error={error}
-      ></RenderModal> */}
-      <RenderMain
-        headerBack={<RenderHeadBack />}
-        content={datas}
-        loading={isLoading}
-        error={error}
-        history={history}
-      ></RenderMain>
-    </>
+    <RenderMain
+      headerBack={<RenderHeadBack />}
+      content={datas}
+      loading={isLoading}
+      error={error}
+      history={history}
+    ></RenderMain>
   );
 };

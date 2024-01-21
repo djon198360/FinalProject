@@ -37,7 +37,6 @@ export const Article = () => {
             <S.ArticleFiilImg>
               <S.ArticleImg>
                 <S.ArticleImgImg
-                  key="001"
                   src={`${SERVER_URL}${data?.images[0]?.url || NoImage}`}
                 />
               </S.ArticleImg>

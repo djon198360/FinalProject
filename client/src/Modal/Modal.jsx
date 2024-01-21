@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable react/no-array-index-key */
 import { useEffect, useState } from "react";
 import Skeleton /* { SkeletonTheme } */ from "react-loading-skeleton";
@@ -26,47 +27,46 @@ export const RenderModal = ({
   };
   const [editPost, { isLoading, error }] = useEditPostMutation();
   const [createPost, { data: createData }] = useCreatePostMutation();
-  const [createImage, { data: imageData }] = useUploadImageMutation();
+  const [
+    createImage,
+    /*    {
+       data: imageData 
+    }, */
+  ] = useUploadImageMutation();
   const [post, setPost] = useState();
-  const [image, setImage] = useState();
-  /*   const serializeForm = (formNode) => {
-    const { elements } = formNode.target;
-    const data = new FormData();
-
-    Array.from(elements)
-      .filter((item) => !!item.name)
-      .forEach((element) => {
-        const { name, type } = element;
-        const value = type === "checkbox" ? element.checked : element.value;
-        data.append(name, value);
-      });
-    console.log(data);
-    return data;
-    //  return new FormData(formNode);
-  }; */
+  const [image, setImage] = useState([]);
+  const [index, setIndex] = useState(0);
+  const [arrayImage, setArrayImage] = useState([]);
+  const countContent = content?.images.length;
+  const count = countContent + index;
   if (createData) {
-    setPost();
+    setPost(createData);
   }
-  const uploadImg = (e) => {
-    const id = 2;
-    const images = e.target.files[0];
-    const imageFormData = new FormData();
-    if (e.target.files[0]) {
-      imageFormData.append("file", e.target.files[0]);
-      createImage(images, id);
-      e.target.value = null;
+  const uploadImg = (se) => {
+    const input = se.target;
+    if (input.files && input.files[0]) {
+      setImage(input.files[0]);
+      if (input.files[0].type.match("image.*")) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          setImage({ ...image, [index]: e.target.result });
+        };
+        reader.readAsDataURL(input.files[0]);
+      } else {
+        console.log("ошибка, не изображение");
+      }
+      setIndex(index + 1);
+    } else {
+      console.log("хьюстон у нас проблема");
     }
-    if (imageData) {
-      setImage(imageData);
-
-      console.log("image add");
+    if (!action) {
+      createImage({ arrayImage, post });
     }
-    return <S.BarImgImg src={`${e.target.files[0]}`} />;
   };
 
   const setEditPost = async (e) => {
     e.preventDefault();
-    const result = await editPost({ post });
+    const result = await editPost({ arrayImage, post });
     if (error) {
       console.log(error);
     }
@@ -78,8 +78,10 @@ export const RenderModal = ({
 
   const setCreatePost = async (e) => {
     e.preventDefault();
-    const result = await createPost(post);
-    return result;
+    const result = await createPost({ arrayImage, post });
+    if (result) {
+      console.log(result);
+    }
   };
 
   const update = (e) => {
@@ -93,7 +95,7 @@ export const RenderModal = ({
     document.addEventListener("keydown", keydownHandler);
     return () => document.removeEventListener("keydown", keydownHandler);
   });
-
+  useEffect(() => {}, [image, arrayImage, index]);
   return !isVisible ? null : (
     <S.Wrapper>
       <S.ContainerBg>
@@ -183,43 +185,50 @@ export const RenderModal = ({
                       </S.BarImg>
                     ))
                   )}
-                  <S.BarImg>
-                    {image}
-                    <S.Label htmlFor="uploadImage">
-                      <S.ImgCover>
-                        <S.ButtonFile
-                          multiple
-                          accept="image/*"
-                          type="file"
-                          id="uploadImage"
-                          name="uploadImage"
-                          onChange={(e) => {
-                            uploadImg(e);
-                          }}
-                        />
-                      </S.ImgCover>
-                    </S.Label>
-                  </S.BarImg>
-                  {/*           {[...Array(5 - (content?.images.length || 0))].map(
-                    (_, index) => (
-                      <S.BarImg key={index}>
-                        {image}
-                        <S.Label htmlFor={index}>
-                          <S.ImgCover>
-                            <S.ButtonFile
-                              accept="image/*"
-                              type="file"
-                              id={index}
-                              name={index}
-                              onChange={(e) => {
-                                uploadImg(e);
-                              }}
-                            />
-                          </S.ImgCover>
-                        </S.Label>
-                      </S.BarImg>
-                    )
-                  )} */}
+                  {Array.from({ length: index }, (_, indexs) => (
+                    <S.BarImg>
+                      <S.BarImgImg key={Math.random()} src={image[indexs]} />
+                      <S.ImgCoverDelete></S.ImgCoverDelete>
+                    </S.BarImg>
+                  ))}
+                  {action && index < 5 && (
+                    <S.BarImg>
+                      <S.Label htmlFor={index}>
+                        <S.ImgCover>
+                          <S.ButtonFile
+                            multiple
+                            accept="image/*"
+                            type="file"
+                            id={index}
+                            name="files"
+                            onChange={(e) => {
+                              setArrayImage([...arrayImage, e.target.files[0]]);
+                              uploadImg(e);
+                            }}
+                          />
+                        </S.ImgCover>
+                      </S.Label>
+                    </S.BarImg>
+                  )}
+                  {!action && count < 5 && (
+                    <S.BarImg>
+                      <S.Label htmlFor={index}>
+                        <S.ImgCover>
+                          <S.ButtonFile
+                            multiple
+                            accept="image/*"
+                            type="file"
+                            id={index}
+                            name="files"
+                            onChange={(e) => {
+                              setArrayImage([...arrayImage, e.target.files[0]]);
+                              uploadImg(e);
+                            }}
+                          />
+                        </S.ImgCover>
+                      </S.Label>
+                    </S.BarImg>
+                  )}
                 </S.FormBarImg>
               </S.ModalFormBlock>
               <S.ModalFormBlockPrice>
