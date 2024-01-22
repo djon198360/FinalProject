@@ -216,7 +216,11 @@ export const RenderMain = ({
                             : history(`/profile/${content?.user.id}`)
                         }
                       >
-                        {loading || !content ? <Skeleton /> : content.user.name}
+                        {loading || !content ? (
+                          <Skeleton />
+                        ) : (
+                          content.user.name ?? "NoName"
+                        )}
                       </S.AuthorName>
                       <S.AuthorAbout>
                         {loading || !content ? (
@@ -235,7 +239,7 @@ export const RenderMain = ({
           </S.MainArticle>
         </S.MainContainer>
         <S.MainContainer>
-          <S.MainTitle>Описание товара</S.MainTitle>
+          <S.MainTitle>Описание товара </S.MainTitle>
           <S.MainContent>
             <S.MainText>
               {loading || !content ? <Skeleton /> : content.description}
