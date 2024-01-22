@@ -11,6 +11,7 @@ import { device } from "../../Consts/ConstMediaScreen";
 import { NoImage, SERVER_URL } from "../../Consts/Consts";
 import { RenderComment } from "../../Modal/Comment";
 import { RenderModal } from "../../Modal/Modal";
+import { RenderHeaderMob } from "../HeaderMob/HeaderMob";
 import {
   formatDateMonth,
   formatDateWeek,
@@ -66,6 +67,7 @@ export const RenderMain = ({
         ></RenderComment>
         <S.MainContainer>
           {headerBack}
+          <RenderHeaderMob />
           <S.MainArticle>
             <S.ArticleContent>
               <S.ArticleLeft>
@@ -181,14 +183,16 @@ export const RenderMain = ({
                         {loading ? (
                           <Skeleton height="100%" width="100%" />
                         ) : (
-                          <S.ButtonRedact onClick={() => handleHideShowPhone()}>
+                          <S.ArticleButton
+                            onClick={() => handleHideShowPhone()}
+                          >
                             {hide ? "Показать телефон" : "Скрыть телефон"}
                             <S.ArticleButtonSpan>
                               {hide
                                 ? hidePhone(content?.user.phone)
                                 : content?.user.phone}
                             </S.ArticleButtonSpan>
-                          </S.ButtonRedact>
+                          </S.ArticleButton>
                         )}
                       </>
                     )}
