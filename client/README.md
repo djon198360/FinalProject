@@ -21,7 +21,7 @@
 возможность оставлять комментарии ко всем объявлениям.
 Технологии
 
-Проект выполнен на React с использованием Typescript, Styled Components, Redux Toolkit, RTK Query, React Router, React-Hook-Form и React-Image-Gallery
+Проект выполнен на React с использованием Styled Components, Redux Toolkit, RTK Query, React Router
 
 Запуск проекта
 
