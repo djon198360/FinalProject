@@ -154,7 +154,7 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
               placeholder="email *"
               autoComplete="username"
               name="email"
-              value={loginValue.email.text}
+              value={loginValue.email?.text}
               onChange={(e) => {
                 updateInputValue(e);
               }}
