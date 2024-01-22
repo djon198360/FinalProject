@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable react/jsx-no-useless-fragment */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -71,11 +72,7 @@ export const RenderMain = ({
           <S.MainArticle>
             <S.ArticleContent>
               <S.ArticleLeft>
-                <S.ArticleFillImg
-                  onClick={() => {
-                    history("/");
-                  }}
-                >
+                <S.ArticleFillImg>
                   <S.ArticleImgDiv>
                     {loading && !content ? (
                       <Skeleton height="100%" width="100%" />

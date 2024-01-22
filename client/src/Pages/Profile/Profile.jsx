@@ -177,8 +177,8 @@ export const Profile = () => {
                       >
                         {isLoadings ? "Отправка данных" : "Сохранить"}
                       </S.Button>
-                      {errors || error || errorPost ? "Error" : null}
                     </S.SettingsForm>
+                    {errors || error || errorPost ? "Error" : null}
                   </S.Right>
                 </S.Settings>
               </S.Content>
@@ -187,7 +187,6 @@ export const Profile = () => {
           </S.CenterBlock>
           <S.MainContent>
             <S.MainCards>
-              {errorPost ? "Error" : null}
               {!isLoadingPost && dataPost && !errorPost
                 ? dataPost.map((post) => (
                     <RenderCardItem post={post} key={post.id}></RenderCardItem>
