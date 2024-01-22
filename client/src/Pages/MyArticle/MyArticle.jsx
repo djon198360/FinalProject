@@ -22,7 +22,6 @@ export const MyArticle = () => {
   useEffect(() => {
     setDatas(data);
   }, [data]);
-  console.log(error);
   if (error?.status === 404) {
     history(`/404`);
   }

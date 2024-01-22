@@ -120,9 +120,6 @@ export const createQuery = (params) => {
 };
 
 export const userSearchId = (params) => {
-  console.log(params);
-  // const userIdArray = params.data.find(({ user }) => user === params.ids);
   const userIdArray = params?.data.filter(({ id }) => params.ids.includes(id));
-  console.log(userIdArray[0]);
   return userIdArray[0];
 };

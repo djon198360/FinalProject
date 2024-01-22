@@ -43,7 +43,6 @@ export const RenderModal = ({
   const uploadImg = (se) => {
     const input = se.target;
     if (input.files && input.files[0]) {
-      setImage(input.files[0]);
       if (input.files[0].type.match("image.*")) {
         const reader = new FileReader();
         reader.onload = function (e) {
@@ -57,10 +56,6 @@ export const RenderModal = ({
     } else {
       console.log("хьюстон у нас проблема");
     }
-    /*     if (!action) {
-      createImage({ arrayImage, post });
-    } */
-    //  setArrayImage([...arrayImage, se.target.files[0]]);
   };
 
   const setEditPost = async (e) => {
@@ -102,7 +97,9 @@ export const RenderModal = ({
     document.addEventListener("keydown", keydownHandler);
     return () => document.removeEventListener("keydown", keydownHandler);
   });
-  useEffect(() => {}, [image, index]);
+  useEffect(() => {
+    console.log("Update");
+  }, [image, index]);
 
   return !isVisible ? null : (
     <S.Wrapper>
@@ -201,7 +198,13 @@ export const RenderModal = ({
                   {Array.from({ length: index }, (_, indexs) => (
                     <S.BarImg>
                       <S.BarImgImg key={Math.random()} src={image[indexs]} />
-                      <S.ImgCoverDelete></S.ImgCoverDelete>
+                      <S.ImgCoverDelete
+                        onClick={() => {
+                          /* setImage({ ...image, delete [image.indexs] }); */
+                          setImage(...image, delete image.indexs);
+                          setIndex(index - 1);
+                        }}
+                      ></S.ImgCoverDelete>
                     </S.BarImg>
                   ))}
                   {action && index < 5 && (
