@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { device } from "../../Consts/ConstMediaScreen";
 
 export const Main = styled.main``;
 
@@ -148,4 +149,13 @@ export const MainCards = styled.div`
   scrollbar-width: thin;
   scrollbar-width: 0px;
   height: 441px;
+  @media ${device.laptopL} {
+    overflow-y: auto;
+  }
+  @media ${device.laptop} {
+    overflow-y: auto;
+  }
+  @media ${device.tablet} {
+    overflow-y: auto;
+  }
 `;

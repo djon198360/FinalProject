@@ -40,7 +40,7 @@ export const ModalBlock = styled.div`
   top: 60px;
   opacity: 1;
   @media ${device.tablet} {
-    position: absolute;
+    position: relative;
     z-index: 5;
     left: 0px;
     top: 55px;
@@ -291,7 +291,7 @@ export const FormBarImg = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-bottom: 10px;
   overflow: hidden;
   @media ${device.tablet} {

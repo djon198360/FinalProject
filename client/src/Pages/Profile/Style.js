@@ -278,14 +278,17 @@ export const MainCards = styled.div`
   height: 441px;
 
   @media ${device.laptopL} {
+    overflow-y: auto;
     display: grid;
     grid-template-columns: repeat(3, 270px);
   }
   @media ${device.laptop} {
+    overflow-y: auto;
     display: grid;
     grid-template-columns: repeat(2, 270px);
   }
   @media ${device.tablet} {
+    overflow-y: auto;
     display: grid;
     grid-template-columns: repeat(2, 137px);
     grid-auto-rows: 293px;

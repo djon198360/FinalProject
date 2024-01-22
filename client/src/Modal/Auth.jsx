@@ -55,8 +55,8 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
 
   const handleRegister = async () => {
     const result = await registerApi({
-      email: loginValue.email.text,
-      password: loginValue.password.text,
+      email: loginValue.email?.text,
+      password: loginValue.password?.text,
       name: loginValue?.name?.text,
       surname: loginValue?.surname?.text,
       city: loginValue?.city?.text,
@@ -72,11 +72,9 @@ export const ModalAuth = ({ isVisible = false, onClose }) => {
         setErrorMessage(result.error.data.message);
       }
     }
-    if (result?.data?.id) {
+    if (result.data.id) {
       toggle();
-      /* navigate("/", { replace: true }); */
     }
-    console.log(result);
   };
   const [isBlock, setisBlock] = useState(true);
   const keydownHandler = ({ key }) => {

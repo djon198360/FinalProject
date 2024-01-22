@@ -70,7 +70,17 @@ export const apiPost = createApi({
           body: formDataCreate,
         };
       },
-      invalidatesTags: () => [{ type: "Users" }],
+      invalidatesTags: (id) => [{ type: "POST", id }],
+    }),
+    deleteImage: builder.mutation({
+      query: (query) => {
+        const { url, postId } = query;
+        return {
+          url: `/ads/${postId}/image?file_url=${url}`,
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: (id) => [{ type: "POST", id }],
     }),
     deletePost: builder.mutation({
       query: (id) => {
@@ -79,17 +89,41 @@ export const apiPost = createApi({
           method: "DELETE",
         };
       },
-      invalidatesTags: () => [{ type: "POST" }],
+      //  invalidatesTags: () => [{ type: "POST" }],
+    }),
+    getAllComments: builder.query({
+      query: (id) => {
+        return {
+          url: `/ads/${id}/comments` /* ?${querySearch} */,
+          method: "GET",
+          headers: { "content-type": "application/json" },
+        };
+      },
+      providesTags: () => [{ type: "COMMENT" }],
+    }),
+    createComment: builder.mutation({
+      query: ({ idPost, text }) => {
+        return {
+          url: `/ads/${idPost}/comments` /* ?${querySearch} */,
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ text }),
+        };
+      },
+      invalidatesTags: () => [{ type: "COMMENT" }],
     }),
   }),
 });
 
 export const {
+  useCreateCommentMutation,
   useDeletePostMutation,
+  useDeleteImageMutation,
   useUploadImageMutation,
   useCreatePostMutation,
   useEditPostMutation,
   useGetAllPostsQuery,
   useGetPostIdQuery,
   useGetAllMyPostQuery,
+  useGetAllCommentsQuery,
 } = apiPost;

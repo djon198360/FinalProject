@@ -1,12 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable react/no-array-index-key */
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Skeleton /* { SkeletonTheme } */ from "react-loading-skeleton";
 import { NoImage, SERVER_URL } from "../Consts/Consts";
 import {
   useEditPostMutation,
   useCreatePostMutation,
   useUploadImageMutation,
+  useDeleteImageMutation,
 } from "../Services/ApiPost";
 import * as S from "./ModalStyle";
 
@@ -25,23 +28,18 @@ export const RenderModal = ({
       default:
     }
   };
+  const history = useNavigate();
   const [editPost, { isLoading, error }] = useEditPostMutation();
-  const [createPost, { data: createData }] = useCreatePostMutation();
-  const [
-    createImage,
-    /*    {
-       data: imageData 
-    }, */
-  ] = useUploadImageMutation();
+  const [createPost] = useCreatePostMutation();
+  const [createImage] = useUploadImageMutation();
+  const [deleteImage] = useDeleteImageMutation();
   const [post, setPost] = useState();
   const [image, setImage] = useState([]);
   const [index, setIndex] = useState(0);
   const [arrayImage, setArrayImage] = useState([]);
   const countContent = content?.images.length;
   const count = countContent + index;
-  if (createData) {
-    setPost(createData);
-  }
+
   const uploadImg = (se) => {
     const input = se.target;
     if (input.files && input.files[0]) {
@@ -59,9 +57,10 @@ export const RenderModal = ({
     } else {
       console.log("хьюстон у нас проблема");
     }
-    if (!action) {
+    /*     if (!action) {
       createImage({ arrayImage, post });
-    }
+    } */
+    //  setArrayImage([...arrayImage, se.target.files[0]]);
   };
 
   const setEditPost = async (e) => {
@@ -79,8 +78,9 @@ export const RenderModal = ({
   const setCreatePost = async (e) => {
     e.preventDefault();
     const result = await createPost({ arrayImage, post });
-    if (result) {
-      console.log(result);
+    if (result.data) {
+      onClose();
+      history(`/article/${result.data.id}`);
     }
   };
 
@@ -91,17 +91,25 @@ export const RenderModal = ({
   useEffect(() => {
     setPost(content);
   }, [content]);
+
+  useEffect(() => {
+    if (!action && isVisible) {
+      createImage({ arrayImage, post });
+    }
+  }, [arrayImage]);
+
   useEffect(() => {
     document.addEventListener("keydown", keydownHandler);
     return () => document.removeEventListener("keydown", keydownHandler);
   });
-  useEffect(() => {}, [image, arrayImage, index]);
+  useEffect(() => {}, [image, index]);
+
   return !isVisible ? null : (
     <S.Wrapper>
       <S.ContainerBg>
         <S.ModalBlock>
           <S.ModalContent>
-            <S.ModalTitle>
+            <S.ModalTitle onClick={onClose}>
               {action ? "Добавить объявление " : "Редактировать объявление"}
             </S.ModalTitle>
             <S.ModalClose>
@@ -171,7 +179,7 @@ export const RenderModal = ({
                       <Skeleton height="100%" width="100%" />
                     </S.BarImg>
                   ) : (
-                    content?.images.map(({ url, id }) => (
+                    content?.images.map(({ url, id, ad_id: postId }) => (
                       <S.BarImg key={id}>
                         {loading && !action ? (
                           <Skeleton height="100%" width="100%" />
@@ -181,7 +189,12 @@ export const RenderModal = ({
                             key={id}
                           />
                         )}
-                        <S.ImgCover></S.ImgCover>
+                        <S.ImgCoverDelete
+                          onClick={() => {
+                            deleteImage({ url, postId });
+                          }}
+                        ></S.ImgCoverDelete>
+                        {/* <S.ImgCover></S.ImgCover> */}
                       </S.BarImg>
                     ))
                   )}
@@ -222,7 +235,7 @@ export const RenderModal = ({
                             name="files"
                             onChange={(e) => {
                               setArrayImage([...arrayImage, e.target.files[0]]);
-                              uploadImg(e);
+                              /* uploadImg(e); */
                             }}
                           />
                         </S.ImgCover>

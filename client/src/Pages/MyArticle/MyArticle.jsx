@@ -4,7 +4,10 @@ import { RenderHeadBack } from "../../Components/HeadBack/Back";
 import { RenderMain } from "../../Components/Main/Main";
 /* import { RenderModal } from "../../Modal/Modal"; */
 /* import { SERVER_URL } from "../../Consts/Consts"; */
-import { useGetPostIdQuery } from "../../Services/ApiPost";
+import {
+  useGetPostIdQuery,
+  useGetAllCommentsQuery,
+} from "../../Services/ApiPost";
 
 export const MyArticle = () => {
   const history = useNavigate();
@@ -15,9 +18,14 @@ export const MyArticle = () => {
   /*   const [isModal, setModal] = useState(false); */
   const { id: ids } = useParams();
   const { data, isLoading, error } = useGetPostIdQuery(ids);
+  const { data: dataComment } = useGetAllCommentsQuery(ids);
   useEffect(() => {
     setDatas(data);
   }, [data]);
+  console.log(error);
+  if (error?.status === 404) {
+    history(`/404`);
+  }
   return (
     <RenderMain
       headerBack={<RenderHeadBack />}
@@ -25,6 +33,8 @@ export const MyArticle = () => {
       loading={isLoading}
       error={error}
       history={history}
+      id={ids}
+      datacomment={dataComment}
     ></RenderMain>
   );
 };

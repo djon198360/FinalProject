@@ -15,6 +15,14 @@ export const formatDateWeek = (date) => {
   return formatDate.format(new Date(date));
 };
 
+export const formatDateComment = (date) => {
+  const formatDate = new Intl.DateTimeFormat("ru", {
+    day: "numeric",
+    month: "long",
+  });
+  return formatDate.format(new Date(date));
+};
+
 export const formatDateMonth = (date) => {
   const formatDate = new Intl.DateTimeFormat("ru", {
     month: "long",

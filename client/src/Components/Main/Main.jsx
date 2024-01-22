@@ -3,11 +3,14 @@ import { useState } from "react";
 import Skeleton /* { SkeletonTheme } */ from "react-loading-skeleton";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useDeletePostMutation } from "../../Services/ApiPost";
+import {
+  useDeletePostMutation,
+  /*   useGetAllCommentsQuery, */
+} from "../../Services/ApiPost";
 import { device } from "../../Consts/ConstMediaScreen";
 import { NoImage, SERVER_URL } from "../../Consts/Consts";
+import { RenderComment } from "../../Modal/Comment";
 import { RenderModal } from "../../Modal/Modal";
-import { ModalComment } from "../../Modal/Comment";
 import {
   formatDateMonth,
   formatDateWeek,
@@ -15,9 +18,16 @@ import {
 } from "../../assets/helpFunc";
 import * as S from "./Style";
 
-export const RenderMain = ({ headerBack, content, loading, error }) => {
+export const RenderMain = ({
+  headerBack,
+  content,
+  loading,
+  error,
+  datacomment,
+  id: idPost,
+}) => {
   const history = useNavigate();
-  const [deletePost, { data }] = useDeletePostMutation();
+  const [deletePost] = useDeletePostMutation();
   const userInfoData = useSelector((state) => state.SliceAuth);
   const { id, isAuth } = userInfoData;
   const [isModal, setModal] = useState(false);
@@ -30,28 +40,30 @@ export const RenderMain = ({ headerBack, content, loading, error }) => {
       setHide(true);
     }
   };
-  const delPost = () => {
-    const result = deletePost(content.id);
-    console.log(data);
-    console.log(result);
+  const delPost = async () => {
+    const result = await deletePost(idPost);
+    if (result?.data === null) {
+      history(`/`);
+    }
   };
-
   const [width] = useState(window.innerWidth);
   return (
     <>
-      <RenderModal
-        isVisible={isModal}
-        onClose={() => setModal(false)}
-        content={content}
-        loading={loading}
-        error={error}
-      ></RenderModal>
-      <RenderModalComment
-        isVisible={isVisibleComment}
-        onClose={() => setIsVisibleComment(false)}
-        loading={loading}
-      ></RenderModalComment>
       <S.Main>
+        <RenderModal
+          isVisible={isModal}
+          onClose={() => setModal(false)}
+          content={content}
+          loading={loading}
+          error={error}
+        ></RenderModal>
+        <RenderComment
+          isVisible={isVisibleComment}
+          onClose={() => setIsVisibleComment(false)}
+          content={datacomment}
+          loading={loading}
+          idPost={idPost}
+        ></RenderComment>
         <S.MainContainer>
           {headerBack}
           <S.MainArticle>
@@ -135,7 +147,8 @@ export const RenderMain = ({ headerBack, content, loading, error }) => {
                       {loading || !content ? <Skeleton /> : content.user.city}
                     </S.ArticleCity>
                     <S.ArticleLink onClick={() => setIsVisibleComment(true)}>
-                      Comment
+                      Comment{" "}
+                      {datacomment?.length ? `(${datacomment.length})` : ""}
                     </S.ArticleLink>
                   </S.ArticleInfo>
                   <S.ArticlePrice>
@@ -198,7 +211,7 @@ export const RenderMain = ({ headerBack, content, loading, error }) => {
                     <S.AuthorCont>
                       <S.AuthorName
                         onClick={() =>
-                          isAuth && id === content?.user.id
+                          isAuth && Number(content.user.id) === Number(id)
                             ? history("/profile/")
                             : history(`/profile/${content?.user.id}`)
                         }

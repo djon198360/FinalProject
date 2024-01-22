@@ -28,8 +28,8 @@ const SliceAuth = createSlice({
       Object.entries(action.payload).map(([key, value]) =>
         localStorage.setItem(key, value)
       );
-
-      Object.entries(action.payload.data).map(
+      console.log(action);
+      Object.entries(action.payload).map(
         ([key, value]) => (state[key] = `${value}`)
       );
     },
