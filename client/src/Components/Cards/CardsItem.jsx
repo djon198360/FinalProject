@@ -17,9 +17,11 @@ export const RenderCardItem = (props) => {
           </Link>
         </S.CardImage>
         <S.CardContent>
-          <S.A>
-            <S.CardTitleH3>{title}</S.CardTitleH3>
-          </S.A>
+          <Link to={`/article/${id}`}>
+            <S.A>
+              <S.CardTitleH3 to={`/article/${id}`}>{title}</S.CardTitleH3>
+            </S.A>
+          </Link>
           <S.CardPrice>{price.toLocaleString("ru-RU")} ₽</S.CardPrice>
           <S.CardPlace>{user.city}</S.CardPlace>
           <S.CardDate>{formatDateWeek(post.created_on)}</S.CardDate>

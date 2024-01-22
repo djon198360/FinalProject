@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useCreateCommentMutation } from "../Services/ApiPost";
 import { RenderCommentItem } from "../Components/CommentBody/CommentItem";
 import * as S from "./CommentStyle";
@@ -17,8 +18,10 @@ export const RenderComment = ({
       default:
     }
   };
+  const userInfoData = useSelector((state) => state.SliceAuth);
+  const { isAuth } = userInfoData;
   const [text, setText] = useState();
-  const [addComment /* , { data, isLoading } */] = useCreateCommentMutation();
+  const [addComment] = useCreateCommentMutation();
 
   useEffect(() => {
     document.addEventListener("keydown", keydownHandler);
@@ -26,7 +29,6 @@ export const RenderComment = ({
   });
 
   const setAddComment = (e) => {
-    console.log(text);
     e.preventDefault();
     addComment({ idPost, text });
   };
@@ -46,19 +48,25 @@ export const RenderComment = ({
                 }}
               >
                 <S.FormBlock>
-                  <S.FormLabel>Добавить отзыв</S.FormLabel>
-                  <S.FormTextArea
-                    name="text"
-                    id="formArea"
-                    cols="auto"
-                    rows="5"
-                    placeholder="Введите описание"
-                    onChange={(e) => {
-                      setText(e.target.value);
-                    }}
-                  ></S.FormTextArea>
+                  <S.FormLabel>
+                    {isAuth
+                      ? "Добавить отзыв"
+                      : "Добавлять отзывы могут только авторизованные"}
+                  </S.FormLabel>
+                  {isAuth ? (
+                    <S.FormTextArea
+                      name="text"
+                      id="formArea"
+                      cols="auto"
+                      rows="5"
+                      placeholder="Введите описание"
+                      onChange={(e) => {
+                        setText(e.target.value);
+                      }}
+                    ></S.FormTextArea>
+                  ) : null}
                 </S.FormBlock>
-                <S.FormButton>Опубликовать</S.FormButton>
+                {isAuth ? <S.FormButton>Опубликовать</S.FormButton> : null}
               </S.ModalForm>
               <S.ModalBody>
                 {content
