@@ -73,6 +73,20 @@ export const ArticleFillImg = styled.div`
     align-items: center;
     justify-content: center;
     position: relative;
+    &::before {
+      content: "";
+      display: block;
+      width: 23px;
+      height: 23px;
+      background-color: transparent;
+      border-top: 2px solid #000000;
+      border-left: 2px solid #000000;
+      transform: rotate(-45deg);
+      position: absolute;
+      top: 24px;
+      left: 32px;
+      cursor: pointer;
+    }
   }
   &:hover::before {
     border-top: 2px solid #0080c1;

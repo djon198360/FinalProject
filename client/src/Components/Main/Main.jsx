@@ -1,8 +1,8 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Skeleton /* { SkeletonTheme } */ from "react-loading-skeleton";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import {
   useDeletePostMutation,
   /*   useGetAllCommentsQuery, */
@@ -71,7 +71,11 @@ export const RenderMain = ({
           <S.MainArticle>
             <S.ArticleContent>
               <S.ArticleLeft>
-                <S.ArticleFillImg>
+                <S.ArticleFillImg
+                  onClick={() => {
+                    history("/");
+                  }}
+                >
                   <S.ArticleImgDiv>
                     {loading && !content ? (
                       <Skeleton height="100%" width="100%" />
