@@ -1,31 +1,23 @@
 /* import { Routes, Route, } from "react-router-dom"; */
 import { Routes, Route } from "react-router-dom";
-
+import { useSelector } from "react-redux";
 import { Pages } from "../Pages/index";
-/* import { ProtectedRoute } from "./ProtectedRoute"; */
+import { ProtectedRoute } from "./ProtectedRoute";
 /* import Context from "../AuthForm/AuthForm"; */
 
 function AppRoutes() {
+  const user = useSelector((state) => state.SliceAuth.isAuth);
   return (
     <Routes>
-      {/*       <Route path="/login" element={<SigninRender />} />
-      <Route path="/register" element={<SignupRender />} /> */}
       <Route path="/" element={<Pages.Main />} />
-      <Route path="/profile/" element={<Pages.Profile />} />
       <Route path="*" element={<Pages.NotFound />} />
       <Route path="/profile/:id" element={<Pages.SellerProfile />} />
       <Route path="/article/:id" element={<Pages.MyArticle />} />
       <Route path="/my-article/" element={<Pages.MyArticle />} />
 
-      {/*       <Route element={<ProtectedRoute isAllowed={Boolean(user)} />}>
-       <Route path="/" element={<Pages.Main />} /> 
-      </Route> */}
-      {/*       <Route element={<ProtectedRoute isAllowed={Boolean(user)} />}>
-        <Route path="/favorites" element={<FavoritesPageRender />} />
-      </Route> */}
-      {/*       <Route element={<ProtectedRoute isAllowed={Boolean(user)} />}>
-        <Route path="/category/:id" element={<CategoryPageRender />} />
-      </Route> */}
+      <Route element={<ProtectedRoute isAllowed={Boolean(user)} />}>
+        <Route path="/profile/" element={<Pages.Profile />} />
+      </Route>
     </Routes>
   );
 }

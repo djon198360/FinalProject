@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { device } from "../Consts/ConstMediaScreen";
+import { device } from "../../Consts/ConstMediaScreen";
 
 export const Wrapper = styled.div`
   /*   width: 100%;

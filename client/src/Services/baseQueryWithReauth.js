@@ -46,16 +46,12 @@ export const baseQueryWithReauth = async (args, api, extraOptions) => {
           'Content-Type': 'application/json',
         }), */
         args.headers = new Headers();
-
-        /* args["headers"] = headers; */
       }
-      if (args.headers) {
+      /*       if (args.headers) {
         args.headers.set("Authorization", `Bearer ${data.access_token}`);
-        /* args.headers.set("Content-Type", "application/json"); */
       } else {
-        /*  args.headers.set("Authorization", `Bearer ${data.access_token}`); */
         args.headers["Authorization"] = `Bearer ${data.access_token}`;
-      }
+      } */
       result = await baseQuery(args, api, extraOptions);
     } else {
       api.dispatch(logout());

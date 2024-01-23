@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import * as S from "./Style";
 import { SERVER_URL } from "../../Consts/Consts";
-import { formatDateWeek } from "../../assets/helpFunc";
+import { formatDateWeek } from "../../assets/utils";
 
 export const RenderCardItem = (props) => {
   const { post } = props;
@@ -18,10 +18,9 @@ export const RenderCardItem = (props) => {
         </S.CardImage>
         <S.CardContent>
           <Link to={`/article/${id}`}>
-            <S.A>
-              <S.CardTitleH3 to={`/article/${id}`}>{title}</S.CardTitleH3>
-            </S.A>
+            <S.CardTitleH3 to={`/article/${id}`}>{title}</S.CardTitleH3>
           </Link>
+
           <S.CardPrice>{price.toLocaleString("ru-RU")} ₽</S.CardPrice>
           <S.CardPlace>{user.city}</S.CardPlace>
           <S.CardDate>{formatDateWeek(post.created_on)}</S.CardDate>

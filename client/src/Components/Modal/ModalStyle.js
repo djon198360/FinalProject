@@ -1,10 +1,7 @@
 import styled from "styled-components";
-import { device } from "../Consts/ConstMediaScreen";
+import { device } from "../../Consts/ConstMediaScreen";
 
 export const Wrapper = styled.div`
-  /*   width: 100%;
-  min-height: 100%;
-  overflow: hidden; */
   position: fixed;
   top: 0;
   bottom: 0;

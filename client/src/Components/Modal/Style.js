@@ -1,4 +1,22 @@
-import { styled, keyframes } from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+export const Appear = keyframes`
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+ `;
+export const SlideIn = keyframes`
+ 
+    from {
+      transform: translateY(-150px);
+    }
+    to {
+      transform: translateY(0);
+    }
+`;
 
 export const ModalBlock = styled.div`
   position: fixed;
@@ -11,7 +29,7 @@ export const ModalBlock = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  animation-name: Appear;
+  animation-name: ${Appear};
   animation-duration: 300ms;
   max-width: 100%;
   height: 100vh;
@@ -36,7 +54,7 @@ export const Modal = styled.div`
     0 6px 20px 0 rgba(0, 0, 0, 0.19);
   -webkit-animation-name: animatetop;
   -webkit-animation-duration: 0.4s;
-  animation-name: SlideIn;
+  animation-name: ${SlideIn};
   animation-duration: 0.5s;
 `;
 
@@ -118,24 +136,6 @@ export const Button = styled.button.attrs((props) => ({
 export const A = styled.a.attrs((props) => ({
   href: props.href,
 }))``;
-
-export const Appear = keyframes`
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
- `;
-export const SlideIn = keyframes`
- 
-    from {
-      transform: translateY(-150px);
-    }
-    to {
-      transform: translateY(0);
-    }
-`;
 
 export const ErrorSpan = styled.span`
   color: red;

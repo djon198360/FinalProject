@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { validInput } from "../assets/helpFunc";
+import { validInput } from "../../assets/utils";
 import * as S from "./Style";
 
 export const ModalAddAds = ({ isVisible = false, onClose }) => {

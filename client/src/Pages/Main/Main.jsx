@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { RenderCardItem } from "../../Components/Cards/CardsItem";
+import { RenderError } from "../../Components/Error/Error";
 import { RenderSearchForm } from "../../Components/SearchForm/Form";
 import { useGetAllPostsQuery } from "../../Services/ApiPost";
-import { RenderCardItem } from "../../Components/Cards/CardsItem";
-import { searchPosts } from "../../assets/helpFunc";
-import { RenderError } from "../../Components/Error/Error";
+import { setIsState } from "../../Services/Slice/SliceAuth";
+import { searchPosts } from "../../assets/utils";
 import * as S from "./Style";
 
 export const Main = () => {
+  const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState();
   const { data, isLoading, error } = useGetAllPostsQuery({});
   const isEmptyList = !isLoading && !data?.length;
+
   const filterPosts = () => {
     let allFilterPosts = data;
     if (searchValue?.length > 0) {
@@ -17,7 +21,12 @@ export const Main = () => {
     }
     return allFilterPosts;
   };
+
   const allFilterPosts = filterPosts();
+
+  useEffect(() => {
+    dispatch(setIsState(isLoading));
+  }, [dispatch, isLoading]);
 
   return (
     <S.Main>
@@ -32,11 +41,11 @@ export const Main = () => {
         <S.MainContent>
           <S.CardsBlock>
             {error ? <RenderError error={error.error} /> : null}
-            {!isEmptyList && data
-              ? allFilterPosts.map((post) => (
-                  <RenderCardItem post={post} key={post.id}></RenderCardItem>
-                ))
-              : null}
+            {data &&
+              allFilterPosts.map((post) => (
+                <RenderCardItem post={post} key={post.id}></RenderCardItem>
+              ))}
+            {isEmptyList && !error && "Объявлений не найдено"}
           </S.CardsBlock>
         </S.MainContent>
       </S.MainContainer>

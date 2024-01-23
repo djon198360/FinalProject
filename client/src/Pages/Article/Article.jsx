@@ -2,11 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useGetPostIdQuery } from "../../Services/ApiPost";
 import { RenderHeadBack } from "../../Components/HeadBack/Back";
-import {
-  formatDateMonth,
-  hidePhone,
-  formatDateWeek,
-} from "../../assets/helpFunc";
+import { formatDateMonth, hidePhone, formatDateWeek } from "../../assets/utils";
 import { SERVER_URL, NoImage } from "../../Consts/Consts";
 import * as S from "./Style";
 

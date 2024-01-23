@@ -1,8 +1,9 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable no-restricted-syntax */
 import { createApi /* , fetchBaseQuery */ } from "@reduxjs/toolkit/query/react";
 /* import { SERVER_URL } from "../Consts/Consts"; */
 import { baseQueryWithReauth } from "./baseQueryWithReauth";
-import { createQuery } from "../assets/helpFunc";
+import { createQuery } from "../assets/utils";
 
 export const apiPost = createApi({
   reducerPath: "apiPost",
@@ -61,6 +62,16 @@ export const apiPost = createApi({
       query: ({ arrayImage, post }) => {
         const { id } = post;
         const formDataCreate = new FormData();
+
+        /*   for (let i = 0; i < arrayImage.length; i++) {
+          formDataCreate = new FormData();
+          for (let j = 0; j < arrayImage[i].length; j++) {
+            console.log(arrayImage[i][j].name);
+            formDataCreate.append("file", arrayImage[i][j]);
+            console.log(filesArray[i].item(j).name);
+          }
+        } */
+
         for (const file of arrayImage) {
           formDataCreate.append("file", file);
         }
@@ -89,7 +100,7 @@ export const apiPost = createApi({
           method: "DELETE",
         };
       },
-      //  invalidatesTags: () => [{ type: "POST" }],
+      invalidatesTags: () => [{ type: "POST" }],
     }),
     getAllComments: builder.query({
       query: (id) => {

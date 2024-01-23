@@ -254,8 +254,10 @@ export const ArticlePrice = styled(ArticleP)`
 `;
 export const ArticleBtnBlock = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  gap: 5px;
+  flex-direction: column;
 `;
+
 export const ArticleButton = styled.button.attrs((props) => ({
   type: props.type,
 }))`
@@ -283,18 +285,31 @@ export const ButtonRedact = styled(ArticleButton)`
   width: 189px;
   margin-right: 10px;
   @media ${device.laptop} {
-    width: 225px;
+    width: 100%;
+    height: 57px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #ffffff;
     margin-right: 0;
   }
   @media ${device.tablet} {
-    width: 189px;
+    width: 100%;
+    height: 57px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #ffffff;
     margin-right: 10px;
   }
 `;
+
 export const ButtonRemove = styled(ArticleButton)`
   width: 225px;
   @media ${device.laptop} {
-    width: 225px;
+    width: 100%;
+    height: 57px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #ffffff;
   }
 `;
 

@@ -1,4 +1,4 @@
-import { formatDateComment } from "../../assets/helpFunc";
+import { formatDateComment } from "../../assets/utils";
 import { NoImage, SERVER_URL } from "../../Consts/Consts";
 import * as S from "./Style";
 

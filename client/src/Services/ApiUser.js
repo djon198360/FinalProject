@@ -1,7 +1,7 @@
 import { createApi /* , fetchBaseQuery */ } from "@reduxjs/toolkit/query/react";
 import { SERVER_URL } from "../Consts/Consts";
 import { baseQueryWithReauth } from "./baseQueryWithReauth";
-import { createQuery } from "../assets/helpFunc";
+import { createQuery } from "../assets/utils";
 
 export const apiUser = createApi({
   reducerPath: "apiUser",

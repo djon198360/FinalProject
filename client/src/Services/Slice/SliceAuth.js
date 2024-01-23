@@ -18,12 +18,16 @@ const initialState = {
   sells_from: null,
   surname: null,
   token_type: null,
+  isState: false,
 };
 
 const SliceAuth = createSlice({
   name: "SliceAuth",
   initialState,
   reducers: {
+    setIsState(state, action) {
+      state.isState = action.payload;
+    },
     setAuthToken: (state, action) => {
       Object.entries(action.payload).map(([key, value]) =>
         localStorage.setItem(key, value)
@@ -53,6 +57,11 @@ const SliceAuth = createSlice({
   },
 });
 
-export const { setAuthToken, setCurrentUser, setAuthReload, logout } =
-  SliceAuth.actions;
+export const {
+  setAuthToken,
+  setCurrentUser,
+  setAuthReload,
+  logout,
+  setIsState,
+} = SliceAuth.actions;
 export default SliceAuth.reducer;

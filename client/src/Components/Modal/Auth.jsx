@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { validInput } from "../assets/helpFunc";
-import { lang } from "../assets/Language";
-import { setCurrentUser } from "../Services/Slice/SliceAuth";
+import { validInput } from "../../assets/utils";
+import { lang } from "../../assets/Language";
+import { setCurrentUser } from "../../Services/Slice/SliceAuth";
 import {
   useUserLoginMutation,
   useUserRegisterMutation,
-} from "../Services/ApiUser";
+} from "../../Services/ApiUser";
 import * as S from "./Style";
 
 export const ModalAuth = ({ isVisible = false, onClose }) => {

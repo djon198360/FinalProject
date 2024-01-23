@@ -1,23 +1,16 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable react/jsx-no-useless-fragment */
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Skeleton /* { SkeletonTheme } */ from "react-loading-skeleton";
 import { useSelector } from "react-redux";
-import {
-  useDeletePostMutation,
-  /*   useGetAllCommentsQuery, */
-} from "../../Services/ApiPost";
+import { useNavigate } from "react-router-dom";
 import { device } from "../../Consts/ConstMediaScreen";
 import { NoImage, SERVER_URL } from "../../Consts/Consts";
-import { RenderComment } from "../../Modal/Comment";
-import { RenderModal } from "../../Modal/Modal";
+import { RenderComment } from "../Modal/Comment";
+import { RenderModal } from "../Modal/Modal";
+import { useDeletePostMutation } from "../../Services/ApiPost";
+import { formatDateMonth, formatDateWeek, hidePhone } from "../../assets/utils";
 import { RenderHeaderMob } from "../HeaderMob/HeaderMob";
-import {
-  formatDateMonth,
-  formatDateWeek,
-  hidePhone,
-} from "../../assets/helpFunc";
 import * as S from "./Style";
 
 export const RenderMain = ({
@@ -42,12 +35,14 @@ export const RenderMain = ({
       setHide(true);
     }
   };
+
   const delPost = async () => {
     const result = await deletePost(idPost);
     if (result?.data === null) {
-      history(`/`);
+      history(`/profile`);
     }
   };
+
   const [width] = useState(window.innerWidth);
   return (
     <>
@@ -88,13 +83,13 @@ export const RenderMain = ({
                     )}
                   </S.ArticleImgDiv>
                   {width && width === device.tablet ? (
-                    <S.ArticleImgBarMob>
-                      <S.ImgBarMobCircle>
+                    <S.ArticleImgBarMob key={Math.random()}>
+                      <S.ImgBarMobCircle key={Math.random()}>
                         {loading && !content ? (
                           <Skeleton circle />
                         ) : (
                           <S.ArticleImgBarDivImg
-                            key={content?.images[0].id}
+                            key={Math.random()}
                             src={
                               content?.images[0]
                                 ? `${SERVER_URL}${content.images[0].url}`
@@ -112,18 +107,18 @@ export const RenderMain = ({
                           <Skeleton height="100%" width="100%" />
                         </S.ArticleImgBarDiv>
                       ) : (
-                        content.images.map(({ url, index }) => (
-                          <S.ArticleImgBarDiv key={index}>
+                        content.images.map(({ url }) => (
+                          <S.ArticleImgBarDiv key={Math.random()}>
                             {loading ? (
                               <Skeleton
-                                key={index}
+                                key={Math.random()}
                                 height="100%"
                                 width="100%"
                               />
                             ) : (
                               <S.ArticleImgBarDivImg
                                 src={`${SERVER_URL}${url}`}
-                                key={index}
+                                key={Math.random()}
                               />
                             )}
                           </S.ArticleImgBarDiv>

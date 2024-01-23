@@ -1,21 +1,26 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import Skeleton /* { SkeletonTheme } */ from "react-loading-skeleton";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Skeleton from "react-loading-skeleton";
 import { RenderHeadBack } from "../../Components/HeadBack/Back";
 import { NoImage, SERVER_URL } from "../../Consts/Consts";
 import {
-  useGetUserQuery,
+  /*  useGetUserQuery, */
   useUpdateUserMutation,
   useUploadAvatarMutation,
 } from "../../Services/ApiUser";
+import { setIsState } from "../../Services/Slice/SliceAuth";
 import { useGetAllMyPostQuery } from "../../Services/ApiPost";
 import { RenderCardItem } from "../../Components/Cards/CardsItem";
 import { RenderHeaderMob } from "../../Components/HeaderMob/HeaderMob";
 import * as S from "./Style";
 
 export const Profile = () => {
-  let userInfoData = useSelector((state) => state.SliceAuth);
-  const { data, isLoading, error /* , refetch: getUser */ } = useGetUserQuery();
+  const dispatch = useDispatch();
+  const history = useNavigate();
+  const userInfoData = useSelector((state) => state.SliceAuth);
+  const { isAuth } = userInfoData;
+  // const { data, isLoading, error /* , refetch: getUser */ } = useGetUserQuery();
   const [editInfo, { isLoading: isLoadings, error: errors }] =
     useUpdateUserMutation();
   const [upload] = useUploadAvatarMutation();
@@ -40,7 +45,7 @@ export const Profile = () => {
   const isEmptyPost = !isLoadingPost && !dataPost?.length;
   if (errorPost) {
     //  refreshToken(() => refetchUserPost);
-    /*  refetchUserPost(); */
+    /* refetchUserPost(); */
   }
 
   const UpdateInputValue = (e) => {
@@ -66,12 +71,16 @@ export const Profile = () => {
     const result = await editInfo(userInfo);
     return result;
   };
+  useEffect(() => {
+    if (!isAuth) {
+      history("/");
+    }
+  }, [history, isAuth]);
 
   useEffect(() => {
-    setUserInfo(data);
-  }, [data]);
+    dispatch(setIsState(isLoadings));
+  }, [dispatch, isLoadings]);
 
-  userInfoData = userInfo;
   return (
     <>
       <RenderHeaderMob />
@@ -80,7 +89,7 @@ export const Profile = () => {
           <S.CenterBlock>
             <RenderHeadBack />
             <S.TitleH2>
-              {isLoading && !error ? (
+              {!userInfoData ? (
                 <Skeleton />
               ) : (
                 `Здравствуйте, ${userInfoData?.name || "NoName"}!`
@@ -92,7 +101,7 @@ export const Profile = () => {
                 <S.Settings>
                   <S.Left>
                     <S.Avatar>
-                      {isLoading && !error ? (
+                      {!userInfoData ? (
                         <Skeleton height="100%" width="100%" circle />
                       ) : (
                         <S.AvatarImg
@@ -128,7 +137,7 @@ export const Profile = () => {
                         <S.Label htmlFor="name">Имя</S.Label>
                         <S.Fname
                           type="text"
-                          value={userInfo ? userInfo.name : ""}
+                          value={userInfoData ? userInfoData.name : ""}
                           onChange={(e) => {
                             UpdateInputValue(e);
                           }}
@@ -139,7 +148,7 @@ export const Profile = () => {
                         <S.Label htmlFor="surname">Фамилия</S.Label>
                         <S.Lname
                           type="text"
-                          value={userInfo ? userInfo.surname : ""}
+                          value={userInfoData ? userInfoData.surname : ""}
                           onChange={(e) => {
                             UpdateInputValue(e);
                           }}
@@ -150,7 +159,7 @@ export const Profile = () => {
                         <S.Label htmlFor="city">Город</S.Label>
                         <S.City
                           type="text"
-                          value={userInfo ? userInfo?.city : ""}
+                          value={userInfoData ? userInfoData?.city : ""}
                           onChange={(e) => {
                             UpdateInputValue(e);
                           }}
@@ -161,7 +170,7 @@ export const Profile = () => {
                         <S.Label htmlFor="phone">Телефон</S.Label>
                         <S.Phone
                           type="tel"
-                          value={userInfo ? userInfo?.phone : ""}
+                          value={userInfoData ? userInfoData?.phone : ""}
                           onChange={(e) => {
                             ValidPhone(e);
                           }}
@@ -171,14 +180,11 @@ export const Profile = () => {
                           name="phone"
                         />
                       </S.SettingDiv>
-                      <S.Button
-                        type="submit"
-                        disabled={isLoadings || isLoading}
-                      >
+                      <S.Button type="submit" disabled={isLoadings}>
                         {isLoadings ? "Отправка данных" : "Сохранить"}
                       </S.Button>
                     </S.SettingsForm>
-                    {errors || error || errorPost ? "Error" : null}
+                    {errors || errorPost ? "Error" : null}
                   </S.Right>
                 </S.Settings>
               </S.Content>
@@ -192,7 +198,7 @@ export const Profile = () => {
                     <RenderCardItem post={post} key={post.id}></RenderCardItem>
                   ))
                 : "Идет загрузка.."}
-              {isEmptyPost ? "У вас нет объявлений" : null}
+              {isEmptyPost && !errorPost ? "У вас нет объявлений" : null}
             </S.MainCards>
           </S.MainContent>
         </S.Container>

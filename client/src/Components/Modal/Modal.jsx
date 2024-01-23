@@ -1,16 +1,15 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable react/no-array-index-key */
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Skeleton /* { SkeletonTheme } */ from "react-loading-skeleton";
-import { NoImage, SERVER_URL } from "../Consts/Consts";
+import { setIsState } from "../../Services/Slice/SliceAuth";
+import { NoImage, SERVER_URL } from "../../Consts/Consts";
 import {
   useEditPostMutation,
   useCreatePostMutation,
   useUploadImageMutation,
   useDeleteImageMutation,
-} from "../Services/ApiPost";
+} from "../../Services/ApiPost";
 import * as S from "./ModalStyle";
 
 export const RenderModal = ({
@@ -20,6 +19,7 @@ export const RenderModal = ({
   loading,
   action,
 }) => {
+  const dispatch = useDispatch();
   const keydownHandler = ({ key }) => {
     switch (key) {
       case "Escape":
@@ -31,8 +31,10 @@ export const RenderModal = ({
   const history = useNavigate();
   const [editPost, { isLoading, error }] = useEditPostMutation();
   const [createPost] = useCreatePostMutation();
-  const [createImage] = useUploadImageMutation();
-  const [deleteImage] = useDeleteImageMutation();
+  const [createImage, { isLoading: isLoadingImageUpload }] =
+    useUploadImageMutation();
+  const [deleteImage, { isLoading: isLoadingImageDelete }] =
+    useDeleteImageMutation();
   const [post, setPost] = useState();
   const [image, setImage] = useState([]);
   const [index, setIndex] = useState(0);
@@ -46,7 +48,7 @@ export const RenderModal = ({
       if (input.files[0].type.match("image.*")) {
         const reader = new FileReader();
         reader.onload = function (e) {
-          setImage({ ...image, [index]: e.target.result });
+          setImage([...image, e.target.result]);
         };
         reader.readAsDataURL(input.files[0]);
       } else {
@@ -57,7 +59,11 @@ export const RenderModal = ({
       console.log("хьюстон у нас проблема");
     }
   };
+  const removeImage = (param) => {
+    const filterImages = image.filter((_, i) => i !== param);
 
+    setImage(filterImages);
+  };
   const setEditPost = async (e) => {
     e.preventDefault();
     const result = await editPost({ arrayImage, post });
@@ -69,7 +75,6 @@ export const RenderModal = ({
     }
     return result;
   };
-
   const setCreatePost = async (e) => {
     e.preventDefault();
     const result = await createPost({ arrayImage, post });
@@ -78,7 +83,6 @@ export const RenderModal = ({
       history(`/article/${result.data.id}`);
     }
   };
-
   const update = (e) => {
     const elem = e.target;
     setPost({ ...post, [elem.id]: elem.value });
@@ -91,16 +95,25 @@ export const RenderModal = ({
     if (!action && isVisible) {
       createImage({ arrayImage, post });
     }
-  }, [arrayImage]);
+  }, [arrayImage, createImage]);
 
   useEffect(() => {
     document.addEventListener("keydown", keydownHandler);
     return () => document.removeEventListener("keydown", keydownHandler);
   });
   useEffect(() => {
-    console.log("Update");
+    console.log(image);
   }, [image, index]);
 
+  useEffect(() => {
+    dispatch(setIsState(isLoading));
+  }, [dispatch, isLoading]);
+  useEffect(() => {
+    dispatch(setIsState(isLoadingImageUpload));
+  }, [dispatch, isLoadingImageUpload]);
+  useEffect(() => {
+    dispatch(setIsState(isLoadingImageDelete));
+  }, [dispatch, isLoadingImageDelete]);
   return !isVisible ? null : (
     <S.Wrapper>
       <S.ContainerBg>
@@ -176,17 +189,18 @@ export const RenderModal = ({
                       <Skeleton height="100%" width="100%" />
                     </S.BarImg>
                   ) : (
-                    content?.images.map(({ url, id, ad_id: postId }) => (
-                      <S.BarImg key={id}>
+                    content?.images.map(({ url, ad_id: postId }) => (
+                      <S.BarImg key={Math.random()}>
                         {loading && !action ? (
                           <Skeleton height="100%" width="100%" />
                         ) : (
                           <S.BarImgImg
                             src={`${SERVER_URL}${url}` || `${NoImage}`}
-                            key={id}
+                            key={Math.random()}
                           />
                         )}
                         <S.ImgCoverDelete
+                          key={Math.random()}
                           onClick={() => {
                             deleteImage({ url, postId });
                           }}
@@ -196,12 +210,14 @@ export const RenderModal = ({
                     ))
                   )}
                   {Array.from({ length: index }, (_, indexs) => (
-                    <S.BarImg>
+                    <S.BarImg key={Math.random()}>
                       <S.BarImgImg key={Math.random()} src={image[indexs]} />
                       <S.ImgCoverDelete
+                        key={Math.random()}
                         onClick={() => {
-                          /* setImage({ ...image, delete [image.indexs] }); */
-                          setImage(...image, delete image.indexs);
+                          /*  setImage([ ...image, delete image.indexs ]});  */
+                          removeImage(indexs);
+                          /*  setImage(...image, [delete image[indexs]]); */
                           setIndex(index - 1);
                         }}
                       ></S.ImgCoverDelete>
@@ -264,14 +280,7 @@ export const RenderModal = ({
                 ></S.InputNamePrice>
                 <S.InputNamePriceCover />
               </S.ModalFormBlockPrice>
-              <S.FormButton
-                type="submit"
-                /* onClick={(e) => {
-                  setEditPost(e);
-                }} */
-              >
-                Сохранить
-              </S.FormButton>
+              <S.FormButton type="submit">Сохранить</S.FormButton>
             </S.ModalForm>
           </S.ModalContent>
         </S.ModalBlock>

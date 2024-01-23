@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { RenderModal } from "../../Modal/Modal";
+import { RenderModal } from "../Modal/Modal";
 import * as S from "./Style";
 
 export const RenderFooter = () => {

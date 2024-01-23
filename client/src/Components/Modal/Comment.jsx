@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useCreateCommentMutation } from "../Services/ApiPost";
-import { RenderCommentItem } from "../Components/CommentBody/CommentItem";
+import { useCreateCommentMutation } from "../../Services/ApiPost";
+import { RenderCommentItem } from "../CommentBody/CommentItem";
 import * as S from "./CommentStyle";
 
 export const RenderComment = ({

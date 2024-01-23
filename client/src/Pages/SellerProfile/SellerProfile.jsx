@@ -5,11 +5,7 @@ import { useUserGetAllQuery } from "../../Services/ApiUser";
 import { NoImage, SERVER_URL } from "../../Consts/Consts";
 import { RenderHeadBack } from "../../Components/HeadBack/Back";
 import { RenderCardItem } from "../../Components/Cards/CardsItem";
-import {
-  formatDateMonth,
-  hidePhone,
-  userSearchId,
-} from "../../assets/helpFunc";
+import { formatDateMonth, hidePhone, userSearchId } from "../../assets/utils";
 import * as S from "./Style";
 
 export const SellerProfile = () => {

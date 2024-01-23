@@ -1,30 +1,19 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { ModalAuth } from "../../Modal/Auth";
-import {
-  /*  setCurrentUser, */
-  logout,
-  setAuthReload,
-} from "../../Services/Slice/SliceAuth";
-import { RenderModal } from "../../Modal/Modal";
-import { ModalAddAds } from "../../Modal/SignUp";
-/* import { logout } from "../../Services/Slice/SliceAuth"; */
+import { ModalAuth } from "../Modal/Auth";
+import { logout } from "../../Services/Slice/SliceAuth";
+import { RenderModal } from "../Modal/Modal";
+import { ModalAddAds } from "../Modal/SignUp";
 import * as S from "./Style";
 
 export const RenderHeader = () => {
   const dispatch = useDispatch();
-  dispatch(setAuthReload(localStorage));
+  const isAuth = useSelector((state) => state.SliceAuth.isAuth);
   const history = useNavigate();
-  const [isModal, setModal] = useState(false);
-  const [createPost, setCreatePost] = useState(false);
-  const userInfo = useSelector((state) => state.SliceAuth);
-  const { isAuth } = userInfo || JSON.parse(localStorage.getItem("isAuth"));
-
-  /*   const isAuth = localStorage?.getItem("isAuth")
-    ? JSON.parse(localStorage.getItem("isAuth"))
-    : false; */
-
+  const [isModal, setModal] = useState();
+  const [createPost, setCreatePost] = useState();
+  /*   const { isAuth } = userInfo; */ // || JSON.parse(localStorage.getItem("isAuth"));
   const logaut = () => {
     dispatch(logout(false));
   };
